@@ -1,0 +1,73 @@
+{
+  "project_info": {
+    "project_number": "1272554091",
+    "firebase_url": "https://trackus-28ba7.firebaseio.com",
+    "project_id": "trackus-28ba7",
+    "storage_bucket": "trackus-28ba7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1272554091:android:b4081eb5d671fe43",
+        "android_client_info": {
+          "package_name": "com.marcosevaristo.tcc001"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1272554091-meur2nu6cevc7gem27r8mlir31egrfru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0fYKE3Ki2S01zAVhd2Ru_IXz2FPtpUAA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1272554091:android:94b3a1d2d8411d9a",
+        "android_client_info": {
+          "package_name": "com.marcosevaristo.trackussource"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1272554091-meur2nu6cevc7gem27r8mlir31egrfru.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0fYKE3Ki2S01zAVhd2Ru_IXz2FPtpUAA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
