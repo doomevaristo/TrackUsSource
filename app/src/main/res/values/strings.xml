@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TrackUsSource</string>
+    <string name="btIniciar">Iniciar Linha</string>
 </resources>

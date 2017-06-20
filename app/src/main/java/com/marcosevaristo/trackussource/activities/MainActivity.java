@@ -5,11 +5,15 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.support.v7.widget.AppCompatSpinner;
 import android.telephony.TelephonyManager;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.firebase.database.Query;
 import com.marcosevaristo.trackussource.R;
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setupTelaInicial();
         FirebaseUtils.startReferenceLinhas();
         try {
             setupLocationSourceSender();
@@ -41,7 +46,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setupLocationSourceSender() throws InterruptedException {
+    private void setupTelaInicial() {
+        AppCompatSpinner comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
+        String[] arrayLinhas = new String[]{"teste"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayLinhas);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        comboLinhas.setAdapter(adapter);
+    }
+
+    private void setupLocationSourceSender() throws InterruptedException {
         if (!possuiPermissoesNecessarias()) {
             ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
         } else {
