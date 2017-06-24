@@ -128,6 +128,14 @@ public class Linha implements Serializable {
         return sb.toString();
     }
 
+    public String toStringMainTextOnly() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.numero);
+        sb.append(" - ");
+        sb.append(this.titulo);
+        return sb.toString();
+    }
+
     public Cidade getCidade() {
         return cidade;
     }

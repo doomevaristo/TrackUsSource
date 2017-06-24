@@ -10,13 +10,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
+import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
+import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.ListAdapter;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.R;
+import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
+import com.marcosevaristo.trackussource.database.QueryBuilder;
+import com.marcosevaristo.trackussource.dto.ListaLinhasDTO;
+import com.marcosevaristo.trackussource.model.Linha;
+import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 
 import java.util.HashMap;
@@ -26,11 +37,16 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     private Query queryRef;
-    private Map carro;
-    LocationManager mLocationManager;
-    Location location;
-    private final String[] PERMISSOES_NECESSARIAS = {Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    private Map carroInfo;
+    private AppCompatSpinner comboLinhas;
+    private LinhasAdapter adapter;
+    private ListaLinhasDTO lLinhas;
+    private LocationManager mLocationManager;
+    private Location location;
+
+    private final String[] PERMISSOES_NECESSARIAS = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION};
+
     private final int INT_REQUISICAO_PERMISSOES = 0;
 
     @Override
@@ -38,20 +54,55 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupTelaInicial();
-        FirebaseUtils.startReferenceLinhas();
-        try {
-            setupLocationSourceSender();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        iniciaThreadSourceSender();
     }
 
     private void setupTelaInicial() {
-        AppCompatSpinner comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
-        String[] arrayLinhas = new String[]{"teste"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayLinhas);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        comboLinhas.setAdapter(adapter);
+        comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
+        comboLinhas.setAdapter(null);
+
+        lLinhas.addLinhas(QueryBuilder.getLinhas(null));
+
+        if(CollectionUtils.isEmpty(lLinhas.getlLinhas())) {
+            queryRef = FirebaseUtils.getLinhasReference().getRef();
+            ValueEventListener evento = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map mapValues = (Map) dataSnapshot.getValue();
+                    if (mapValues != null) {
+                        lLinhas = new ListaLinhasDTO();
+                        lLinhas.addLinhas(Linha.converteMapParaListaLinhas(mapValues));
+                        adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
+                        adapter.notifyDataSetChanged();
+                        comboLinhas.setAdapter(adapter);
+                    } else {
+                        Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            };
+
+            queryRef.addListenerForSingleValueEvent(evento);
+        }
+
+    }
+
+    private void iniciaThreadSourceSender() {
+        Thread sourceSender = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    setupLocationSourceSender();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        sourceSender.run();
     }
 
     private void setupLocationSourceSender() throws InterruptedException {
@@ -59,14 +110,12 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
         } else {
             location = getLastKnownLocation();
-            TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-            String uniqueId = telephonyManager.getDeviceId();
-            carro = new HashMap<>();
-            queryRef = FirebaseUtils.getLinhasReference().orderByChild("carros").equalTo(uniqueId);
+            carroInfo = new HashMap<>();
+            Query queryRefSourceSender = FirebaseUtils.getCarroReference();
             while (true) {
-                carro.put("latitude", location.getLatitude());
-                carro.put("longitude", location.getLongitude());
-                queryRef.getRef().updateChildren(carro);
+                carroInfo.put("latitude", location.getLatitude());
+                carroInfo.put("longitude", location.getLongitude());
+                queryRefSourceSender.getRef().updateChildren(carroInfo);
                 wait(5000);
             }
         }

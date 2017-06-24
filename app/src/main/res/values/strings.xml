@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">TrackUsSource</string>
     <string name="btIniciar">Iniciar Linha</string>
+
+    <!-- ALERTS -->
+    <string name="nenhum_resultado">Não foram encontrados resultados na busca</string>
 </resources>
