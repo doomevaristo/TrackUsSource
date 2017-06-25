@@ -63,55 +63,28 @@ public class Linha implements Serializable {
         String numeroAux = null;
         String tituloAux = null;
         String subTituloAux = null;
-        String location = null;
-        String latitude = null;
-        String longitude = null;
-        String id = null;
-        List<Carro> lCarrosAux = new ArrayList<>();
-        for(Object umaKeyAux : lMapLinhas.keySet()) {
-            String umaKey = umaKeyAux.toString();
-            switch(umaKey) {
-                case "numero":
-                    numeroAux = lMapLinhas.get(umaKeyAux).toString();
-                    break;
-                case "titulo":
-                    tituloAux = lMapLinhas.get(umaKeyAux).toString();
-                    break;
-                case "subtitulo":
-                    subTituloAux = lMapLinhas.get(umaKeyAux).toString();
-                    break;
-                case "carros":
-                    Collection<Map> mapCarros = ((Map) lMapLinhas.get(umaKeyAux)).values();
-                    for(Map umCarroMap : mapCarros) {
-                        for(Object umKey : umCarroMap.keySet()) {
-                            String umKeyStr = umKey.toString();
-                            switch (umKeyStr) {
-                                case "location":
-                                    location = umCarroMap.get(umKey).toString();
-                                    break;
-                                case "latitude":
-                                    latitude = umCarroMap.get(umKey).toString();
-                                    break;
-                                case "longitude":
-                                    longitude = umCarroMap.get(umKey).toString();
-                                    break;
-                                case "id":
-                                    id = umCarroMap.get(umKey).toString();
-                                    break;
-                                default:
-                                    break;
-                            }
-                        }
-                        lCarrosAux.add(new Carro(id, longitude, latitude, location));
-                    }
-                    break;
-                default:
-                    break;
+        for(Object umaLinhaIdObj : lMapLinhas.keySet()) {
+            Map<Object, Object> mapUmaLinha = (Map<Object, Object>) lMapLinhas.get(umaLinhaIdObj);
+            for(Object umaKeyAux : mapUmaLinha.keySet()) {
+                String umaKey = umaKeyAux.toString();
+                switch(umaKey) {
+                    case "numero":
+                        numeroAux = mapUmaLinha.get(umaKeyAux).toString();
+                        break;
+                    case "titulo":
+                        tituloAux = mapUmaLinha.get(umaKeyAux).toString();
+                        break;
+                    case "subtitulo":
+                        subTituloAux = mapUmaLinha.get(umaKeyAux).toString();
+                        break;
+                    default:
+                        break;
+                }
             }
+            lLinhas.add(new Linha(null, numeroAux, tituloAux, subTituloAux));
         }
-        Linha linhaAux = new Linha(lCarrosAux, numeroAux, tituloAux, subTituloAux);
-        linhaAux.setCarros(lCarrosAux);
-        lLinhas.add(linhaAux);
+
+
         return lLinhas;
     }
 

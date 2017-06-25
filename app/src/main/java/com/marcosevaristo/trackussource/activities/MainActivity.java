@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
@@ -41,9 +42,10 @@ public class MainActivity extends AppCompatActivity {
     private Thread threadSourceSender;
     private Query queryRef;
     private Map carroInfo;
+    private String carroId;
     private AppCompatButton botaoIniciarLinha;
     private AppCompatSpinner comboLinhas;
-    private LinhasAdapter adapter;
+    private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
     private LocationManager mLocationManager;
     private Location location;
@@ -57,22 +59,48 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        App.setLinhaAtual(QueryBuilder.getLinhaAtual());
         setupTelaInicial();
     }
 
     private void setupTelaInicial() {
+        setupStatusLinhaIcon();
+        while (!possuiPermissoesNecessarias()) {
+            ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        carroId = telephonyManager.getDeviceId();
+
+        FirebaseUtils.startReferences(App.getLinhaAtual(), carroId);
+
         setupComboLinhas();
         setupBotaoIniciarLinha();
+    }
+
+    private void setupStatusLinhaIcon() {
+        AppCompatImageView linhaIcon = (AppCompatImageView) findViewById(R.id.statusLinhaIcon);
+        if(App.getLinhaAtual() != null) {
+            linhaIcon.setImageResource(R.drawable.check);
+        } else {
+            linhaIcon.setImageResource(R.drawable.close);
+        }
     }
 
     private void setupComboLinhas() {
         comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
         comboLinhas.setAdapter(null);
 
+        lLinhas = new ListaLinhasDTO();
         lLinhas.addLinhas(QueryBuilder.getLinhas(null));
 
         if(CollectionUtils.isEmpty(lLinhas.getlLinhas())) {
-            queryRef = FirebaseUtils.getLinhasReference().getRef();
+            queryRef = FirebaseUtils.getLinhasReference().orderByKey().getRef();
             ValueEventListener evento = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -80,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                     if (mapValues != null) {
                         lLinhas = new ListaLinhasDTO();
                         lLinhas.addLinhas(Linha.converteMapParaListaLinhas(mapValues));
-                        adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
+                        adapter = new ArrayAdapter<String>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
+                        //adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
                         adapter.notifyDataSetChanged();
                         comboLinhas.setAdapter(adapter);
                     } else {
@@ -104,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Linha linhaSelecionada = (Linha) comboLinhas.getSelectedItem();
                 App.setLinhaAtual(linhaSelecionada);
+                setupStatusLinhaIcon();
                 iniciaThreadSourceSender();
             }
         });
@@ -127,18 +157,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupLocationSourceSender() throws InterruptedException {
-        if (!possuiPermissoesNecessarias()) {
-            ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
-        } else {
-            location = getLastKnownLocation();
-            carroInfo = new HashMap<>();
-            Query queryRefSourceSender = FirebaseUtils.getCarroReference();
-            while (true) {
-                carroInfo.put("latitude", location.getLatitude());
-                carroInfo.put("longitude", location.getLongitude());
-                queryRefSourceSender.getRef().updateChildren(carroInfo);
-                wait(5000);
-            }
+        location = getLastKnownLocation();
+        carroInfo = new HashMap<>();
+        Query queryRefSourceSender = FirebaseUtils.getCarroReference();
+        while (true) {
+            carroInfo.put("latitude", location.getLatitude());
+            carroInfo.put("longitude", location.getLongitude());
+            queryRefSourceSender.getRef().updateChildren(carroInfo);
+            wait(5000);
         }
     }
 
@@ -160,20 +186,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return melhorLocalizacao;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case INT_REQUISICAO_PERMISSOES: {
-                try {
-                    setupLocationSourceSender();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return;
-            }
-        }
     }
 
     private boolean possuiPermissoesNecessarias() {

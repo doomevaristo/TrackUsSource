@@ -7,11 +7,17 @@
     android:id="@+id/layoutMain"
     tools:context="com.marcosevaristo.trackussource.activities.MainActivity">
 
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/statusLinhaIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/comboLinhas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"/>
+        android:layout_marginTop="20dp"
+        android:textColor="#FFFFFF"/>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btIniciar"

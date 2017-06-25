@@ -5,7 +5,6 @@ import android.database.Cursor;
 import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.model.Cidade;
 import com.marcosevaristo.trackussource.model.Linha;
-import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -47,8 +46,30 @@ public class QueryBuilder {
         return sb.toString();
     }
 
-    private static boolean colunasInformadasClausulasNaoInformadas(String[] columns, List<Cidade> lCidades) {
-        return CollectionUtils.isEmpty(lCidades) && columns != null && columns.length > 0;
+    public static Linha getLinhaAtual() {
+        Linha linhaAux = null;
+        Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllLinhaAtual(), null);
+        if(cursor != null) {
+            cursor.moveToFirst();
+        }
+        while(cursor.moveToNext()) {
+            linhaAux = new Linha();
+            linhaAux.setNumero(cursor.getString(0));
+            linhaAux.setTitulo(cursor.getString(1));
+            linhaAux.setSubtitulo(cursor.getString(2));
+            linhaAux.setCidade(new Cidade(cursor.getString(3)));
+        }
+
+        cursor.close();
+        return linhaAux;
+    }
+
+    private static String getSelectAllLinhaAtual() {
+        StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TLinhas.getInstance().getColunasParaSelect()).append(" FROM ");
+        sb.append(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME).append(" LIA ");
+        sb.append(" INNER JOIN ").append(SQLiteObjectsHelper.TLinhas.TABLE_NAME).append(" LINHA ON LINHA.");
+        sb.append(SQLiteObjectsHelper.TLinhas._ID).append(" = LIA.").append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID);
+        return sb.toString();
     }
 
 }

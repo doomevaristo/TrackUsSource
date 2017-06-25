@@ -11,13 +11,15 @@ public class ListaLinhasDTO {
     private List<Linha> lLinhas;
 
     public void addLinhas(List<Linha> lista) {
-        if(CollectionUtils.isEmpty(lLinhas)) {
-            lLinhas = new ArrayList<>();
-        }
-        for(Linha umaLinha : lista) {
-            if(findLinhaByNumeroOuTitulo(umaLinha.getNumero().toString()) == null
-                    && this.findLinhaByNumeroOuTitulo(umaLinha.getTitulo()) == null) {
-                lLinhas.add(umaLinha);
+        if(CollectionUtils.isNotEmpty(lista)) {
+            if(CollectionUtils.isEmpty(lLinhas)) {
+                lLinhas = new ArrayList<>();
+            }
+            for(Linha umaLinha : lista) {
+                if(findLinhaByNumeroOuTitulo(umaLinha.getNumero()) == null
+                        && this.findLinhaByNumeroOuTitulo(umaLinha.getTitulo()) == null) {
+                    lLinhas.add(umaLinha);
+                }
             }
         }
     }
@@ -42,7 +44,7 @@ public class ListaLinhasDTO {
     private Linha findLinhaByNumeroOuTitulo(String arg) {
         if(CollectionUtils.isNotEmpty(this.lLinhas)) {
             for(Linha umaLinha : this.lLinhas) {
-                if(umaLinha.getNumero().toString().equals(arg) || umaLinha.getTitulo().equals(arg)) {
+                if(umaLinha.getNumero().equals(arg) || umaLinha.getTitulo().equals(arg)) {
                     return umaLinha;
                 }
             }

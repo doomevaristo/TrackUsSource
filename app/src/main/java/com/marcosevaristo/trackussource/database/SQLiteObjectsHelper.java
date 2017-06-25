@@ -2,31 +2,9 @@ package com.marcosevaristo.trackussource.database;
 
 import android.provider.BaseColumns;
 
-public class SQLiteObjectsHelper implements OperacoesComColunas{
-    private static SQLiteObjectsHelper instance;
+public class SQLiteObjectsHelper {
 
     private SQLiteObjectsHelper(){}
-
-    public static SQLiteObjectsHelper getInstance() {
-        if(instance == null) {
-            instance = new SQLiteObjectsHelper();
-        }
-        return instance;
-    }
-
-    @Override
-    public String getColunasParaSelect() {
-        return null;
-    }
-
-    @Override
-    public String getCreateEntry() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(TLinhas.getInstance().getCreateEntry());
-        sb.append(TLinhaAtual.getInstance().getCreateEntry());
-        return sb.toString();
-    }
-
 
     public static class TLinhas implements BaseColumns, OperacoesComColunas {
         public static String TABLE_NAME = "TB_LINHAS";
