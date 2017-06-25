@@ -12,7 +12,6 @@ public class SQLiteObjectsHelper {
         public static String COLUMN_TITULO = "LIN_TITULO";
         public static String COLUMN_SUBTITULO = "LIN_SUBTITULO";
         public static String COLUMN_CIDADE = "LIN_CIDADEID";
-        public static String COLUMN_LINHAATUAL = "LIN_LINHAATUAL";
 
         private static TLinhas instance;
 
@@ -32,7 +31,6 @@ public class SQLiteObjectsHelper {
             sb.append(",").append(COLUMN_TITULO).append(" VARCHAR(255) NOT NULL ");
             sb.append(",").append(COLUMN_SUBTITULO).append(" VARCHAR(600) NULL ");
             sb.append(",").append(COLUMN_CIDADE).append(" INTEGER NULL ");
-            sb.append(",").append(COLUMN_LINHAATUAL).append(" INTEGER NOT NULL ");
             sb.append(");");
             return sb.toString();
         }
@@ -40,8 +38,8 @@ public class SQLiteObjectsHelper {
         @Override
         public String getColunasParaSelect() {
             StringBuilder sb = new StringBuilder();
-            sb.append(COLUMN_NUMERO).append(", ").append(COLUMN_TITULO).append(", ").append(COLUMN_SUBTITULO)
-                    .append(", ").append(COLUMN_CIDADE).append(", ").append(COLUMN_LINHAATUAL);
+            sb.append("LIN.").append(_ID).append(", ").append(COLUMN_NUMERO).append(", ")
+                    .append(COLUMN_TITULO).append(", ").append(COLUMN_SUBTITULO).append(", ").append(COLUMN_CIDADE);
             return sb.toString();
         }
     }
@@ -61,7 +59,9 @@ public class SQLiteObjectsHelper {
 
         @Override
         public String getColunasParaSelect() {
-            return COLUMN_LINHAID;
+            StringBuilder sb = new StringBuilder();
+            sb.append("LIA.").append(_ID).append(COLUMN_LINHAID);
+            return sb.toString();
         }
 
         @Override

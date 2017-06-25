@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/layoutMain"
+    android:background="@color/background"
     tools:context="com.marcosevaristo.trackussource.activities.MainActivity">
 
     <android.support.v7.widget.AppCompatImageView
@@ -12,12 +13,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        style="?android:attr/android:progressBarStyle"
+        />
+
     <android.support.v7.widget.AppCompatSpinner
         android:id="@+id/comboLinhas"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:textColor="#FFFFFF"/>
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"/>
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btIniciar"

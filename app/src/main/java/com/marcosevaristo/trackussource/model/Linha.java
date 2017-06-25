@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Linha implements Serializable {
+    private Long idSql;
     private Cidade cidade;
     private String numero;
     private String titulo;
@@ -48,6 +49,14 @@ public class Linha implements Serializable {
 
     public void setSubtitulo(String subtitulo) {
         this.subtitulo = subtitulo;
+    }
+
+    public Long getIdSql() {
+        return idSql;
+    }
+
+    public void setIdSql(Long idSql) {
+        this.idSql = idSql;
     }
 
     public List<Carro> getCarros() {

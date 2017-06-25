@@ -8,6 +8,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
@@ -43,8 +44,11 @@ public class MainActivity extends AppCompatActivity {
     private Query queryRef;
     private Map carroInfo;
     private String carroId;
+
+    private ContentLoadingProgressBar progressBar;
     private AppCompatButton botaoIniciarLinha;
     private AppCompatSpinner comboLinhas;
+
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
     private LocationManager mLocationManager;
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTelaInicial() {
         setupStatusLinhaIcon();
+        progressBar = (ContentLoadingProgressBar) findViewById(R.id.progressBar);
         while (!possuiPermissoesNecessarias()) {
             ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
             try {
@@ -93,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupComboLinhas() {
+        progressBar.show();
         comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
         comboLinhas.setAdapter(null);
 
@@ -107,22 +113,29 @@ public class MainActivity extends AppCompatActivity {
                     Map mapValues = (Map) dataSnapshot.getValue();
                     if (mapValues != null) {
                         lLinhas = new ListaLinhasDTO();
-                        lLinhas.addLinhas(Linha.converteMapParaListaLinhas(mapValues));
-                        adapter = new ArrayAdapter<String>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
+                        List<Linha> lLinhasAux = Linha.converteMapParaListaLinhas(mapValues);
+                        QueryBuilder.insereLinhas(lLinhasAux);
+                        lLinhas.addLinhas(lLinhasAux);
+                        adapter = new ArrayAdapter<>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
                         //adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
                         adapter.notifyDataSetChanged();
                         comboLinhas.setAdapter(adapter);
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
+                    progressBar.hide();
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    progressBar.hide();
                 }
             };
             queryRef.addListenerForSingleValueEvent(evento);
+        } else {
+            adapter = new ArrayAdapter<>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
+            comboLinhas.setAdapter(adapter);
+            progressBar.hide();
         }
     }
 
@@ -133,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Linha linhaSelecionada = (Linha) comboLinhas.getSelectedItem();
                 App.setLinhaAtual(linhaSelecionada);
+                QueryBuilder.atualizaLinhaAtual(linhaSelecionada);
                 setupStatusLinhaIcon();
                 iniciaThreadSourceSender();
             }

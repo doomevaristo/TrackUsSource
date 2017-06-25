@@ -1,6 +1,8 @@
 package com.marcosevaristo.trackussource.database;
 
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.model.Cidade;
@@ -23,13 +25,15 @@ public class QueryBuilder {
         if(cursor != null) {
             cursor.moveToFirst();
         }
-        while(cursor.moveToNext()) {
+        for (int i = 0; i < cursor.getCount(); i++) {
             linhaAux = new Linha();
-            linhaAux.setNumero(cursor.getString(0));
-            linhaAux.setTitulo(cursor.getString(1));
-            linhaAux.setSubtitulo(cursor.getString(2));
-            linhaAux.setCidade(new Cidade(cursor.getString(3)));
+            linhaAux.setIdSql(cursor.getLong(0));
+            linhaAux.setNumero(cursor.getString(1));
+            linhaAux.setTitulo(cursor.getString(2));
+            linhaAux.setSubtitulo(cursor.getString(3));
+            linhaAux.setCidade(new Cidade(cursor.getString(4)));
             lLinhas.add(linhaAux);
+            cursor.moveToNext();
         }
 
         cursor.close();
@@ -52,12 +56,14 @@ public class QueryBuilder {
         if(cursor != null) {
             cursor.moveToFirst();
         }
-        while(cursor.moveToNext()) {
+        for (int i = 0; i < cursor.getCount(); i++) {
             linhaAux = new Linha();
-            linhaAux.setNumero(cursor.getString(0));
-            linhaAux.setTitulo(cursor.getString(1));
-            linhaAux.setSubtitulo(cursor.getString(2));
-            linhaAux.setCidade(new Cidade(cursor.getString(3)));
+            linhaAux.setIdSql(cursor.getLong(0));
+            linhaAux.setNumero(cursor.getString(1));
+            linhaAux.setTitulo(cursor.getString(2));
+            linhaAux.setSubtitulo(cursor.getString(3));
+            linhaAux.setCidade(new Cidade(cursor.getString(4)));
+            break;
         }
 
         cursor.close();
@@ -67,9 +73,45 @@ public class QueryBuilder {
     private static String getSelectAllLinhaAtual() {
         StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TLinhas.getInstance().getColunasParaSelect()).append(" FROM ");
         sb.append(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME).append(" LIA ");
-        sb.append(" INNER JOIN ").append(SQLiteObjectsHelper.TLinhas.TABLE_NAME).append(" LINHA ON LINHA.");
+        sb.append(" INNER JOIN ").append(SQLiteObjectsHelper.TLinhas.TABLE_NAME).append(" LIN ON LIN.");
         sb.append(SQLiteObjectsHelper.TLinhas._ID).append(" = LIA.").append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID);
         return sb.toString();
     }
 
+    public static void insereLinhas(List<Linha> lLinhas) {
+        SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        db.beginTransaction();
+        for (Linha umaLinha : lLinhas) {
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO, umaLinha.getNumero());
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_TITULO, umaLinha.getTitulo());
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_SUBTITULO, umaLinha.getSubtitulo());
+            //values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, linha.getCidade().getId());
+            db.insert(SQLiteObjectsHelper.TLinhas.TABLE_NAME, null, values);
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static void atualizaLinhaAtual(Linha linha) {
+        SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+        Linha linhaAtualAux = getLinhas(linha.getNumero()).get(0);
+        ContentValues values = new ContentValues();
+        values.put(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID, linhaAtualAux.getIdSql());
+
+        if(getLinhaAtual() == null) {
+            db.beginTransaction();
+            db.insert(SQLiteObjectsHelper.TLinhas.TABLE_NAME, null, values);
+        } else {
+            StringBuilder whereClause = new StringBuilder();
+            whereClause.append(" WHERE ").append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID).append(" = ?");
+            db.beginTransaction();
+            db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{linha.getIdSql().toString()});
+        }
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
 }
