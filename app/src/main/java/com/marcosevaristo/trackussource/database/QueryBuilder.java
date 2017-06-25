@@ -40,7 +40,9 @@ public class QueryBuilder {
             linhaAux.setTitulo(cursor.getString(2));
             linhaAux.setSubtitulo(cursor.getString(3));
             linhaAux.setCidade(new Cidade(cursor.getString(4)));
-            linhaAux.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(linhaAux.getIdSql()));
+            if(App.getLinhaAtual() != null) {
+                linhaAux.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(linhaAux.getIdSql()));
+            }
             lLinhas.add(linhaAux);
             cursor.moveToNext();
         }
@@ -115,12 +117,14 @@ public class QueryBuilder {
             linhaAtualAux.setIdSql(db.insert(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, null, values));
         } else {
             StringBuilder whereClause = new StringBuilder();
-            whereClause.append(" WHERE ").append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID).append(" = ?");
+            whereClause.append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID).append(" = ?");
             db.beginTransaction();
             db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{novaLinha.getIdSql().toString()});
         }
 
-        alteraLinhaAtualFirebase(novaLinha, carroId);
+        if(FirebaseUtils.getCarroReference() != null) {
+            alteraLinhaAtualFirebase(novaLinha, carroId);
+        }
 
         App.setLinhaAtual(linhaAtualAux);
 
@@ -129,26 +133,26 @@ public class QueryBuilder {
     }
 
     private static void alteraLinhaAtualFirebase(Linha novaLinha, String carroId) {
+        queryRefLinhaAtual = FirebaseUtils.getCarroReference();
         FirebaseUtils.startReferenceCarro(novaLinha, carroId);
-        queryRefLinhaAtual = FirebaseUtils.getCarroReference().getRef();
-        queryRefNovaLinha = FirebaseUtils.getLinhasReference().child(novaLinha.getNumero()).child("carros").getRef();
+        queryRefNovaLinha = FirebaseUtils.getCarroReference();
 
         queryRefLinhaAtual.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                queryRefNovaLinha.getRef().setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                        if (databaseError != null)
-                        {
-                            System.out.println("Copy failed");
+                if(dataSnapshot.getValue() != null) {
+                    queryRefNovaLinha.getRef().setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
+                        @Override
+                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                            if (databaseError != null) {
+                                System.out.println("Copy failed");
+                            } else {
+                                System.out.println("Success");
+                                queryRefLinhaAtual.getRef().setValue("0");
+                            }
                         }
-                        else
-                        {
-                            System.out.println("Success");
-                        }
-                    }
-                });
+                    });
+                }
             }
 
             @Override

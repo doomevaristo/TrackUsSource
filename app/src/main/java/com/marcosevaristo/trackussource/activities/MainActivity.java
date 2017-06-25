@@ -14,6 +14,7 @@ import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -28,6 +29,7 @@ import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
 import com.marcosevaristo.trackussource.dto.ListaLinhasDTO;
+import com.marcosevaristo.trackussource.model.Carro;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Thread threadSourceSender;
     private Query queryRef;
-    private Map carroInfo;
+    private Carro carro;
     private String carroId;
 
     private ContentLoadingProgressBar progressBar;
@@ -102,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    view.setSelected(true);
+                ((Linha) parent.getItemAtPosition(position)).setSelecionada(true);
             }
         });
         lLinhas = new ListaLinhasDTO();
@@ -150,16 +152,22 @@ public class MainActivity extends AppCompatActivity {
         botaoIniciarLinha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Linha linhaSelecionada = (Linha) listViewLinhas.getSelectedItem();
-                QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
-                setupStatusLinhaIcon();
-                iniciaThreadSourceSender();
+                Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
+                if(linhaSelecionada != null) {
+                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
+                    iniciaThreadSourceSender();
+                    setupStatusLinhaIcon();
+                } else {
+                    Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
 
     private void iniciaThreadSourceSender() {
-        threadSourceSender.interrupt();
+        if(threadSourceSender != null && threadSourceSender.isAlive()) {
+            threadSourceSender.interrupt();
+        }
         if(App.getLinhaAtual() != null) {
             threadSourceSender = new Thread(new Runnable() {
                 @Override
@@ -176,14 +184,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupLocationSourceSender() throws InterruptedException {
-        location = getLastKnownLocation();
-        carroInfo = new HashMap<>();
+        carro = new Carro();
         Query queryRefSourceSender = FirebaseUtils.getCarroReference();
         while (true) {
-            carroInfo.put("latitude", location.getLatitude());
-            carroInfo.put("longitude", location.getLongitude());
-            queryRefSourceSender.getRef().updateChildren(carroInfo);
-            wait(5000);
+            location = getLastKnownLocation();
+            carro.setId(carroId);
+            carro.setLatitude(String.valueOf(location.getLatitude()));
+            carro.setLongitude(String.valueOf(location.getLongitude()));
+            carro.setLocation("Teste ab");
+            Toast.makeText(this,"Latitude: "+
+                    String.valueOf(location.getLatitude())+", Longitude: "+String.valueOf(location.getLongitude()), Toast.LENGTH_LONG).show();
+            queryRefSourceSender.getRef().setValue(carro);
+            Thread.sleep(5000);
         }
     }
 

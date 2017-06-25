@@ -4,4 +4,5 @@
 
     <!-- ALERTS -->
     <string name="nenhum_resultado">Não foram encontrados resultados na busca</string>
+    <string name="nenhuma_linha_selecionada">Selecione uma linha para iniciar o rastreamento</string>
 </resources>

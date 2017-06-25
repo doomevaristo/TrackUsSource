@@ -74,6 +74,15 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
         return view;
     }
 
+    public Linha getLinhaSelecionada() {
+        for(Linha umaLinha : lLinhas) {
+            if(umaLinha.isSelecionada()) {
+                return umaLinha;
+            }
+        }
+        return null;
+    }
+
     private static class LinhaHolder {
         TextView texto;
         TextView subTexto;
