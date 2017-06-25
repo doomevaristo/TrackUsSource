@@ -21,6 +21,7 @@ public class App extends Application {
         TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         carroId = telephonyManager.getDeviceId();
         FirebaseUtils.startReferenceCarro(App.getLinhaAtual(), carroId);
+        FirebaseUtils.startReferenceLinhas();
     }
 
     public static Context getAppContext() {
@@ -37,5 +38,6 @@ public class App extends Application {
 
     public static void setLinhaAtual(Linha linhaAtual) {
         App.linhaAtual = linhaAtual;
+        FirebaseUtils.startReferenceCarro(linhaAtual, carroId);
     }
 }

@@ -1,8 +1,6 @@
 package com.marcosevaristo.trackussource.database;
 
-import android.content.ContentValues;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
 import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.model.Cidade;
@@ -40,12 +38,12 @@ public class QueryBuilder {
     }
 
     private static String getSelectAllLinhas(String nroLinha) {
-        StringBuilder sb = new StringBuilder("SELECT ").append(DatabaseHelper.SQLiteObjectsHelper.TLinhas.getColunasParaSelect()).append(" FROM ");
-        sb.append(DatabaseHelper.SQLiteObjectsHelper.TLinhas.TABLE_NAME).append(" LIN ");
+        StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TLinhas.getInstance().getColunasParaSelect()).append(" FROM ");
+        sb.append(SQLiteObjectsHelper.TLinhas.TABLE_NAME).append(" LIN ");
         if(StringUtils.isNotBlank(nroLinha)) {
-            sb.append(" WHERE ").append(DatabaseHelper.SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO).append(" LIKE '%").append(nroLinha).append("%' ");
+            sb.append(" WHERE ").append(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO).append(" LIKE '%").append(nroLinha).append("%' ");
         }
-        sb.append(" ORDER BY ").append(DatabaseHelper.SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO).append(" DESC");
+        sb.append(" ORDER BY ").append(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO).append(" DESC");
         return sb.toString();
     }
 

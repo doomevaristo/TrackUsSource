@@ -9,11 +9,13 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.Toast;
 
@@ -36,8 +38,10 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    private Thread threadSourceSender;
     private Query queryRef;
     private Map carroInfo;
+    private AppCompatButton botaoIniciarLinha;
     private AppCompatSpinner comboLinhas;
     private LinhasAdapter adapter;
     private ListaLinhasDTO lLinhas;
@@ -54,10 +58,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setupTelaInicial();
-        iniciaThreadSourceSender();
     }
 
     private void setupTelaInicial() {
+        setupComboLinhas();
+        setupBotaoIniciarLinha();
+    }
+
+    private void setupComboLinhas() {
         comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
         comboLinhas.setAdapter(null);
 
@@ -85,24 +93,37 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             };
-
             queryRef.addListenerForSingleValueEvent(evento);
         }
+    }
 
+    private void setupBotaoIniciarLinha() {
+        botaoIniciarLinha = (AppCompatButton) findViewById(R.id.btIniciar);
+        botaoIniciarLinha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Linha linhaSelecionada = (Linha) comboLinhas.getSelectedItem();
+                App.setLinhaAtual(linhaSelecionada);
+                iniciaThreadSourceSender();
+            }
+        });
     }
 
     private void iniciaThreadSourceSender() {
-        Thread sourceSender = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    setupLocationSourceSender();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        threadSourceSender.interrupt();
+        if(App.getLinhaAtual() != null) {
+            threadSourceSender = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        setupLocationSourceSender();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
-        sourceSender.run();
+            });
+            threadSourceSender.run();
+        }
     }
 
     private void setupLocationSourceSender() throws InterruptedException {

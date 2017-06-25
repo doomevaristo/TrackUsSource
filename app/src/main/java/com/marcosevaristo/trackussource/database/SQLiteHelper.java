@@ -8,7 +8,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     private static SQLiteHelper sInstance;
     private static int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "FAVORITOS";
+    private static final String DATABASE_NAME = "LINHAS";
 
     public static synchronized SQLiteHelper getInstance(Context context) {
         if (sInstance == null) {
@@ -23,7 +23,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(DatabaseHelper.SQLiteObjectsHelper.TLinhas.getCreateEntry());
+        db.execSQL(SQLiteObjectsHelper.getInstance().getCreateEntry());
     }
 
     @Override
@@ -34,5 +34,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     @Override
     public void onOpen(SQLiteDatabase db) {
         super.onOpen(db);
+        if (!db.isReadOnly()) {
+            db.execSQL("PRAGMA foreign_keys=ON;");
+        }
     }
 }
