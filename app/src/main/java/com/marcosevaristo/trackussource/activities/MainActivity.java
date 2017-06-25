@@ -12,13 +12,11 @@ import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -47,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ContentLoadingProgressBar progressBar;
     private AppCompatButton botaoIniciarLinha;
-    private AppCompatSpinner comboLinhas;
+    private ListViewCompat listViewLinhas;
 
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
@@ -84,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUtils.startReferences(App.getLinhaAtual(), carroId);
 
-        setupComboLinhas();
+        setupListViewLinhas();
         setupBotaoIniciarLinha();
     }
 
@@ -97,11 +95,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupComboLinhas() {
+    private void setupListViewLinhas() {
         progressBar.show();
-        comboLinhas = (AppCompatSpinner) findViewById(R.id.comboLinhas);
-        comboLinhas.setAdapter(null);
-
+        listViewLinhas = (ListViewCompat) findViewById(R.id.listViewLinhas);
+        listViewLinhas.setAdapter(null);
+        listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    view.setSelected(true);
+            }
+        });
         lLinhas = new ListaLinhasDTO();
         lLinhas.addLinhas(QueryBuilder.getLinhas(null));
 
@@ -115,11 +118,14 @@ public class MainActivity extends AppCompatActivity {
                         lLinhas = new ListaLinhasDTO();
                         List<Linha> lLinhasAux = Linha.converteMapParaListaLinhas(mapValues);
                         QueryBuilder.insereLinhas(lLinhasAux);
+                        for(Linha umaLinha : lLinhasAux) {
+                            if(App.getLinhaAtual() == null) break;
+                            umaLinha.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(umaLinha.getIdSql()));
+                        }
                         lLinhas.addLinhas(lLinhasAux);
-                        adapter = new ArrayAdapter<>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
-                        //adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
+                        adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
                         adapter.notifyDataSetChanged();
-                        comboLinhas.setAdapter(adapter);
+                        listViewLinhas.setAdapter(adapter);
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
@@ -133,8 +139,8 @@ public class MainActivity extends AppCompatActivity {
             };
             queryRef.addListenerForSingleValueEvent(evento);
         } else {
-            adapter = new ArrayAdapter<>(App.getAppContext(), R.layout.support_simple_spinner_dropdown_item, lLinhas.getArrayListLinhas());
-            comboLinhas.setAdapter(adapter);
+            adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
+            listViewLinhas.setAdapter(adapter);
             progressBar.hide();
         }
     }
@@ -144,9 +150,8 @@ public class MainActivity extends AppCompatActivity {
         botaoIniciarLinha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Linha linhaSelecionada = (Linha) comboLinhas.getSelectedItem();
-                App.setLinhaAtual(linhaSelecionada);
-                QueryBuilder.atualizaLinhaAtual(linhaSelecionada);
+                Linha linhaSelecionada = (Linha) listViewLinhas.getSelectedItem();
+                QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
                 setupStatusLinhaIcon();
                 iniciaThreadSourceSender();
             }

@@ -19,9 +19,7 @@ public class FirebaseUtils {
     }
 
     public static void startReferenceCarro(Linha linhaAtual, String idCarro) {
-        if(databaseReferenceCarro == null) {
-            databaseReferenceCarro = getDatabase().getReference().child("linhas").child(linhaAtual.getNumero()).child("carros").child(idCarro);
-        }
+        databaseReferenceCarro = getDatabase().getReference().child("linhas").child(linhaAtual.getNumero()).child("carros").child(idCarro);
     }
 
     public static void startReferenceLinhas() {

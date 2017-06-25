@@ -2,7 +2,6 @@ package com.marcosevaristo.trackussource.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ public class Linha implements Serializable {
     private String titulo;
     private String subtitulo;
     private List<Carro> carros;
-    private boolean ehFavorito = false;
+    private boolean ehLinhaAtual = false;
 
     private static final long serialVersionUID = 1L;
 
@@ -126,11 +125,11 @@ public class Linha implements Serializable {
         this.cidade = cidade;
     }
 
-    public boolean ehFavorito() {
-        return ehFavorito;
+    public boolean ehLinhaAtual() {
+        return ehLinhaAtual;
     }
 
-    public void setEhFavorito(boolean ehFavorito) {
-        this.ehFavorito = ehFavorito;
+    public void setEhLinhaAtual(boolean ehLinhaAtual) {
+        this.ehLinhaAtual = ehLinhaAtual;
     }
 }
