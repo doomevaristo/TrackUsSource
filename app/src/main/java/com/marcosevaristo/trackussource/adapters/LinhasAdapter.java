@@ -67,10 +67,8 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
             if(StringUtils.isNotBlank(linha.getSubtitulo())) {
                 linhaHolder.subTexto.setText(linha.getSubtitulo());
             }
+            view.setSelected(linha.ehLinhaAtual());
         }
-
-        view.setSelected(linha.ehLinhaAtual());
-
         return view;
     }
 

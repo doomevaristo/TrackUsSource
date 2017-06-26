@@ -145,6 +145,11 @@ public class MainActivity extends AppCompatActivity {
             listViewLinhas.setAdapter(adapter);
             progressBar.hide();
         }
+        for(Linha umaLinha : lLinhas.getlLinhas()) {
+            if(umaLinha.isSelecionada()) {
+                listViewLinhas.setItemChecked(lLinhas.getlLinhas().indexOf(umaLinha), true);
+            }
+        }
     }
 
     private void setupBotaoIniciarLinha() {
@@ -192,8 +197,6 @@ public class MainActivity extends AppCompatActivity {
             carro.setLatitude(String.valueOf(location.getLatitude()));
             carro.setLongitude(String.valueOf(location.getLongitude()));
             carro.setLocation("Teste ab");
-            Toast.makeText(this,"Latitude: "+
-                    String.valueOf(location.getLatitude())+", Longitude: "+String.valueOf(location.getLongitude()), Toast.LENGTH_LONG).show();
             queryRefSourceSender.getRef().setValue(carro);
             Thread.sleep(5000);
         }
