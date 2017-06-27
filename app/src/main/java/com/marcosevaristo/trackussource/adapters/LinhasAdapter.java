@@ -49,7 +49,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
         LinhaHolder linhaHolder = null;
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = inflater.inflate(layoutResId, parent, false);;
+            view = inflater.inflate(layoutResId, parent, false);
             linhaHolder = new LinhaHolder();
             TextView mainTextView = (TextView)view.findViewById(R.id.linhaBuscadaText);
             TextView subTextView = (TextView)view.findViewById(R.id.linhaBuscadaSubText);

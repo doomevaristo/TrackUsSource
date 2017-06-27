@@ -30,9 +30,7 @@
         android:divider="@android:color/black"
         android:dividerHeight="4sp"
         android:drawSelectorOnTop="false"
-        android:focusable="true"
-        android:cacheColorHint="#00000000"
-        android:listSelector="@color/selectedItem"/>
+        android:listSelector="@drawable/selector" />
 
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/btIniciar"

@@ -18,6 +18,7 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -104,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
         listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                parent.setSelection(position);
                 ((Linha) parent.getItemAtPosition(position)).setSelecionada(true);
+                view.setSelected(true);
             }
         });
         lLinhas = new ListaLinhasDTO();
@@ -145,11 +148,11 @@ public class MainActivity extends AppCompatActivity {
             listViewLinhas.setAdapter(adapter);
             progressBar.hide();
         }
-        for(Linha umaLinha : lLinhas.getlLinhas()) {
+        /*for(Linha umaLinha : lLinhas.getlLinhas()) {
             if(umaLinha.isSelecionada()) {
                 listViewLinhas.setItemChecked(lLinhas.getlLinhas().indexOf(umaLinha), true);
             }
-        }
+        }*/
     }
 
     private void setupBotaoIniciarLinha() {
