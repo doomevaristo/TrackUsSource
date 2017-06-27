@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.AdapterView;
@@ -103,7 +102,9 @@ public class MainActivity extends Activity {
         listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ((Linha) parent.getItemAtPosition(position)).setSelecionada(true);
+                for(Linha umaLinha : lLinhas.getlLinhas()) {
+                    umaLinha.setSelecionada(lLinhas.getlLinhas().indexOf(umaLinha) == position);
+                }
                 ((LinhasAdapter)listViewLinhas.getAdapter()).selectItem(position);
                 ((ListView) parent).invalidateViews();
             }
