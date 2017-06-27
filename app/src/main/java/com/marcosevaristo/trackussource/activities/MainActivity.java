@@ -134,6 +134,13 @@ public class MainActivity extends Activity {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
                     progressBar.setVisibility(View.GONE);
+                    if(lLinhas != null && CollectionUtils.isNotEmpty(lLinhas.getlLinhas())) {
+                        for(Linha umaLinha : lLinhas.getlLinhas()) {
+                            if(umaLinha.isSelecionada()) {
+                                listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
+                            }
+                        }
+                    }
                 }
 
                 @Override
@@ -148,9 +155,11 @@ public class MainActivity extends Activity {
             adapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
         }
-        for(Linha umaLinha : lLinhas.getlLinhas()) {
-            if(umaLinha.isSelecionada()) {
-                listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
+        if(lLinhas != null && CollectionUtils.isNotEmpty(lLinhas.getlLinhas())) {
+            for(Linha umaLinha : lLinhas.getlLinhas()) {
+                if(umaLinha.isSelecionada()) {
+                    listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
+                }
             }
         }
     }
