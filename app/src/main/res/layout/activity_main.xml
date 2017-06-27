@@ -8,19 +8,19 @@
     android:background="#FFFFFF"
     tools:context="com.marcosevaristo.trackussource.activities.MainActivity">
 
-    <android.support.v7.widget.AppCompatImageView
+    <ImageView
         android:id="@+id/statusLinhaIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
-    <android.support.v4.widget.ContentLoadingProgressBar
+    <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         style="?android:attr/android:progressBarStyle" />
 
-    <android.support.v7.widget.ListViewCompat
+    <ListView
         android:id="@+id/listViewLinhas"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listLinhasHeight"
@@ -32,7 +32,7 @@
         android:drawSelectorOnTop="false"
         android:listSelector="@drawable/selector" />
 
-    <android.support.v7.widget.AppCompatButton
+    <Button
         android:id="@+id/btIniciar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

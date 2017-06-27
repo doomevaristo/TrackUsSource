@@ -1,6 +1,7 @@
 package com.marcosevaristo.trackussource.activities;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -8,17 +9,15 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.AppCompatImageView;
-import android.support.v7.widget.ListViewCompat;
 import android.telephony.TelephonyManager;
-import android.util.SparseBooleanArray;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.RelativeLayout;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -35,20 +34,19 @@ import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private Thread threadSourceSender;
     private Query queryRef;
     private Carro carro;
     private String carroId;
 
-    private ContentLoadingProgressBar progressBar;
-    private AppCompatButton botaoIniciarLinha;
-    private ListViewCompat listViewLinhas;
+    private ProgressBar progressBar;
+    private Button botaoIniciarLinha;
+    private ListView listViewLinhas;
 
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupTelaInicial() {
         setupStatusLinhaIcon();
-        progressBar = (ContentLoadingProgressBar) findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
         while (!possuiPermissoesNecessarias()) {
             ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
             try {
@@ -90,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupStatusLinhaIcon() {
-        AppCompatImageView linhaIcon = (AppCompatImageView) findViewById(R.id.statusLinhaIcon);
+        ImageView linhaIcon = (ImageView) findViewById(R.id.statusLinhaIcon);
         if(App.getLinhaAtual() != null) {
             linhaIcon.setImageResource(R.drawable.check);
         } else {
@@ -99,15 +97,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupListViewLinhas() {
-        progressBar.show();
-        listViewLinhas = (ListViewCompat) findViewById(R.id.listViewLinhas);
+        progressBar.setVisibility(View.VISIBLE);
+        listViewLinhas = (ListView) findViewById(R.id.listViewLinhas);
         listViewLinhas.setAdapter(null);
         listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                parent.setSelection(position);
                 ((Linha) parent.getItemAtPosition(position)).setSelecionada(true);
-                view.setSelected(true);
+                ((LinhasAdapter)listViewLinhas.getAdapter()).selectItem(position);
+                ((ListView) parent).invalidateViews();
             }
         });
         lLinhas = new ListaLinhasDTO();
@@ -134,29 +132,30 @@ public class MainActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
-                    progressBar.hide();
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    progressBar.hide();
+                    progressBar.setVisibility(View.GONE);
                 }
             };
             queryRef.addListenerForSingleValueEvent(evento);
         } else {
             adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
             listViewLinhas.setAdapter(adapter);
-            progressBar.hide();
+            adapter.notifyDataSetChanged();
+            progressBar.setVisibility(View.GONE);
         }
-        /*for(Linha umaLinha : lLinhas.getlLinhas()) {
+        for(Linha umaLinha : lLinhas.getlLinhas()) {
             if(umaLinha.isSelecionada()) {
-                listViewLinhas.setItemChecked(lLinhas.getlLinhas().indexOf(umaLinha), true);
+                listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
             }
-        }*/
+        }
     }
 
     private void setupBotaoIniciarLinha() {
-        botaoIniciarLinha = (AppCompatButton) findViewById(R.id.btIniciar);
+        botaoIniciarLinha = (Button) findViewById(R.id.btIniciar);
         botaoIniciarLinha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

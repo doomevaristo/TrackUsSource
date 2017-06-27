@@ -2,6 +2,7 @@ package com.marcosevaristo.trackussource.adapters;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.AppCompatRadioButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.StringUtils;
@@ -20,6 +22,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
     private List<Linha> lLinhas = new ArrayList<>();
     private int layoutResId;
     private Context ctx;
+    private int posicaoSelecionada;
 
     public LinhasAdapter(Context ctx, int layoutResId, List<Linha> lLinhas) {
         super(ctx, layoutResId, lLinhas);
@@ -67,9 +70,18 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
             if(StringUtils.isNotBlank(linha.getSubtitulo())) {
                 linhaHolder.subTexto.setText(linha.getSubtitulo());
             }
-            view.setSelected(linha.ehLinhaAtual());
+
+            if(position == posicaoSelecionada) {
+                view.setBackgroundColor(App.getAppContext().getResources().getColor(R.color.selectedItem));
+            } else {
+                view.setBackgroundColor(Color.TRANSPARENT);
+            }
         }
         return view;
+    }
+
+    public void selectItem(int pos) {
+        posicaoSelecionada = pos;
     }
 
     public Linha getLinhaSelecionada() {
