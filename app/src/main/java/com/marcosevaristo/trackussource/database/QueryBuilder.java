@@ -109,17 +109,17 @@ public class QueryBuilder {
     public static void atualizaLinhaAtual(Linha novaLinha, String carroId) {
         SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
         Linha linhaAtualAux = getLinhas(novaLinha.getNumero()).get(0);
+        Linha linhaAtualOld = getLinhaAtual();
         ContentValues values = new ContentValues();
         values.put(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID, linhaAtualAux.getIdSql());
-
-        if(getLinhaAtual() == null) {
+        if(linhaAtualOld == null) {
             db.beginTransaction();
             linhaAtualAux.setIdSql(db.insert(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, null, values));
         } else {
             StringBuilder whereClause = new StringBuilder();
             whereClause.append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID).append(" = ?");
             db.beginTransaction();
-            db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{novaLinha.getIdSql().toString()});
+            db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{linhaAtualOld.getIdSql().toString()});
         }
 
         if(FirebaseUtils.getCarroReference() != null) {

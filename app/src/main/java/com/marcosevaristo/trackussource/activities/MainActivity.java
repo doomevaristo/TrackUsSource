@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -19,11 +20,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
@@ -50,7 +53,10 @@ public class MainActivity extends Activity {
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
     private LocationManager mLocationManager;
-    private Location location;
+    private LatLng location;
+
+    private Long intervaloAtualizacaoLocalicazaoEmMilis = 5000L;
+    private Float distanciaMinimaParaAtualizarLocalizacaoEmMetros = 10.0f;
 
     private final String[] PERMISSOES_NECESSARIAS = {Manifest.permission.READ_PHONE_STATE, Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -172,7 +178,9 @@ public class MainActivity extends Activity {
                 Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
                 if(linhaSelecionada != null) {
                     QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
-                    iniciaThreadSourceSender();
+                    if(App.getLinhaAtual() != null) {
+                        startLocationListener();
+                    }
                     setupStatusLinhaIcon();
                 } else {
                     Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
@@ -181,57 +189,19 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void iniciaThreadSourceSender() {
-        if(threadSourceSender != null && threadSourceSender.isAlive()) {
-            threadSourceSender.interrupt();
+    private LatLng startLocationListener() {
+        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(carroId));
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return null;
         }
-        if(App.getLinhaAtual() != null) {
-            threadSourceSender = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        setupLocationSourceSender();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-            threadSourceSender.run();
-        }
-    }
+        Location location = locationManager.getLastKnownLocation(bestProvider);
+        locationManager.requestLocationUpdates(bestProvider, intervaloAtualizacaoLocalicazaoEmMilis,
+                distanciaMinimaParaAtualizarLocalizacaoEmMetros , carroLocationListener);
 
-    private void setupLocationSourceSender() throws InterruptedException {
-        carro = new Carro();
-        Query queryRefSourceSender = FirebaseUtils.getCarroReference();
-        while (true) {
-            location = getLastKnownLocation();
-            carro.setId(carroId);
-            carro.setLatitude(String.valueOf(location.getLatitude()));
-            carro.setLongitude(String.valueOf(location.getLongitude()));
-            carro.setLocation("Teste ab");
-            queryRefSourceSender.getRef().setValue(carro);
-            Thread.sleep(5000);
-        }
-    }
-
-    private Location getLastKnownLocation() {
-        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
-        List<String> providers = mLocationManager.getProviders(true);
-        Location melhorLocalizacao = null;
-        for (String provider : providers) {
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return null;
-            }
-            Location l = mLocationManager.getLastKnownLocation(provider);
-            if (l == null) {
-                continue;
-            }
-            if (melhorLocalizacao == null || l.getAccuracy() < melhorLocalizacao.getAccuracy()) {
-                melhorLocalizacao = l;
-            }
-        }
-        return melhorLocalizacao;
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     private boolean possuiPermissoesNecessarias() {

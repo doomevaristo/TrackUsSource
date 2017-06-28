@@ -16,6 +16,10 @@ public class Carro implements Serializable{
     public Carro() {
     }
 
+    public Carro(String carroId) {
+        setId(carroId);
+    }
+
     public Carro(String id, String longitude, String latitude, String location) {
         this.id = id;
         this.longitude = longitude;
