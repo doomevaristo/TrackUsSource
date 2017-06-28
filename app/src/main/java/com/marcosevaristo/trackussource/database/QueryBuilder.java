@@ -16,12 +16,14 @@ import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 import com.marcosevaristo.trackussource.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class QueryBuilder {
 
     private static SQLiteHelper sqLiteHelper = App.getSqLiteHelper();
-    private static Query queryRefLinhaAtual;
+    private static Query queryRefLinhaAtualOld;
     private static Query queryRefNovaLinha;
 
     private QueryBuilder() {}
@@ -122,9 +124,7 @@ public class QueryBuilder {
             db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{linhaAtualOld.getIdSql().toString()});
         }
 
-        if(FirebaseUtils.getCarroReference() != null) {
-            alteraLinhaAtualFirebase(novaLinha, carroId);
-        }
+        alteraLinhaAtualFirebase(novaLinha, carroId);
 
         App.setLinhaAtual(linhaAtualAux);
 
@@ -132,33 +132,52 @@ public class QueryBuilder {
         db.endTransaction();
     }
 
-    private static void alteraLinhaAtualFirebase(Linha novaLinha, String carroId) {
-        queryRefLinhaAtual = FirebaseUtils.getCarroReference();
+    private static void alteraLinhaAtualFirebase(final Linha novaLinha, final String carroId) {
+        queryRefLinhaAtualOld = FirebaseUtils.getCarroReference();
         FirebaseUtils.startReferenceCarro(novaLinha, carroId);
         queryRefNovaLinha = FirebaseUtils.getCarroReference();
 
-        queryRefLinhaAtual.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.getValue() != null) {
-                    queryRefNovaLinha.getRef().setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                            if (databaseError != null) {
-                                System.out.println("Copy failed");
-                            } else {
-                                System.out.println("Success");
-                                queryRefLinhaAtual.getRef().setValue("0");
+        if(queryRefLinhaAtualOld != null) { //Alterou linha
+            queryRefLinhaAtualOld.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.getValue() != null) {
+                        queryRefNovaLinha.getRef().setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                if (databaseError != null) {
+                                    System.out.println("Copy failed");
+                                } else {
+                                    System.out.println("Success");
+                                    queryRefLinhaAtualOld.getRef().setValue("0");
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Copy failed");
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("Copy failed");
+                }
+            });
+        } else { //Iniciou carro a primeira vez
+            queryRefNovaLinha.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Map<String, String> mapValues = new HashMap<>();
+                    mapValues.put("id", carroId);
+                    mapValues.put("latitude", "0");
+                    mapValues.put("longitude", "0");
+                    mapValues.put("location", "inicial");
+                    queryRefNovaLinha.getRef().setValue(mapValues);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        }
     }
 }
