@@ -149,7 +149,7 @@ public class QueryBuilder {
                                     System.out.println("Copy failed");
                                 } else {
                                     System.out.println("Success");
-                                    queryRefLinhaAtualOld.getRef().setValue("0");
+                                    queryRefLinhaAtualOld.getRef().removeValue();
                                 }
                             }
                         });
