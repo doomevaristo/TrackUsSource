@@ -11,7 +11,7 @@ public class Linha implements Serializable {
     private String numero;
     private String titulo;
     private String subtitulo;
-    private Carro carro;
+    private List<Carro> lCarros;
     private boolean ehLinhaAtual = false;
     private boolean selecionada = false;
 
@@ -20,8 +20,8 @@ public class Linha implements Serializable {
     public Linha() {
     }
 
-    public Linha(Carro carro, String numero, String titulo, String subtitulo) {
-        this.carro = carro;
+    public Linha(List<Carro> lCarros, String numero, String titulo, String subtitulo) {
+        this.lCarros = lCarros;
         this.numero = numero;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -59,12 +59,8 @@ public class Linha implements Serializable {
         this.idSql = idSql;
     }
 
-    public Carro getCarro() {
-        return carro;
-    }
-
-    public void setCarros(Carro carro) {
-        this.carro = carro;
+    public List<Carro> getlCarros() {
+        return lCarros;
     }
 
     public static List<Linha> converteMapParaListaLinhas(Map lMapLinhas) {

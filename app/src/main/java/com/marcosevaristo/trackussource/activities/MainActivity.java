@@ -42,10 +42,7 @@ import java.util.Map;
 
 public class MainActivity extends Activity {
 
-    private Thread threadSourceSender;
     private Query queryRef;
-    private Carro carro;
-    private String carroId;
 
     private ProgressBar progressBar;
     private Button botaoIniciarLinha;
@@ -53,8 +50,6 @@ public class MainActivity extends Activity {
 
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
-    private LocationManager mLocationManager;
-    private LatLng location;
 
     private Long intervaloAtualizacaoLocalicazaoEmMilis = 5000L;
     private Float distanciaMinimaParaAtualizarLocalizacaoEmMetros = 10.0f;
@@ -84,9 +79,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        carroId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        FirebaseUtils.startReferences(App.getLinhaAtual(), carroId);
+        FirebaseUtils.startReferences(App.getLinhaAtual(), App.getCarroId());
 
         setupListViewLinhas();
         setupBotaoIniciarLinha();
@@ -177,7 +170,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
                 if(linhaSelecionada != null) {
-                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
+                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, App.getCarroId());
                     if(App.getLinhaAtual() != null) {
                         startLocationListener();
                     }
@@ -190,9 +183,9 @@ public class MainActivity extends Activity {
     }
 
     private void startLocationListener() {
-        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(carroId));
+        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(App.getCarroId()));
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        String bestProvider = locationManager.getBestProvider(new Criteria(), false);
+        locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
