@@ -46,8 +46,6 @@ public class MainActivity extends Activity {
     private Carro carro;
     private String carroId;
 
-    private Linha linhaSelecionadaAnt;
-
     private ProgressBar progressBar;
     private Button botaoIniciarLinha;
     private ListView listViewLinhas;
@@ -178,11 +176,8 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
-                if(linhaSelecionada != linhaSelecionadaAnt && linhaSelecionada != null) {
-                    linhaSelecionadaAnt = linhaSelecionada;
-                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
-                }
                 if(linhaSelecionada != null) {
+                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, carroId);
                     if(App.getLinhaAtual() != null) {
                         startLocationListener();
                     }
@@ -194,17 +189,19 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void startLocationListener() {
+    private LatLng startLocationListener() {
         CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(carroId));
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         String bestProvider = locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            return null;
         }
-        //Location location = locationManager.getLastKnownLocation(bestProvider);
+        Location location = locationManager.getLastKnownLocation(bestProvider);
         locationManager.requestLocationUpdates(bestProvider, intervaloAtualizacaoLocalicazaoEmMilis,
                 distanciaMinimaParaAtualizarLocalizacaoEmMetros , carroLocationListener);
+
+        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     private boolean possuiPermissoesNecessarias() {
