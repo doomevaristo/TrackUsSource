@@ -21,7 +21,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
     private List<Linha> lLinhas = new ArrayList<>();
     private int layoutResId;
     private Context ctx;
-    private int posicaoSelecionada;
+    private Integer posicaoSelecionada;
 
     public LinhasAdapter(Context ctx, int layoutResId, List<Linha> lLinhas) {
         super(ctx, layoutResId, lLinhas);
@@ -70,7 +70,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
                 linhaHolder.subTexto.setText(linha.getSubtitulo());
             }
 
-            if(position == posicaoSelecionada) {
+            if((Integer.valueOf(position) == posicaoSelecionada) || (posicaoSelecionada == null && linha.ehLinhaAtual())) {
                 view.setBackgroundColor(App.getAppContext().getResources().getColor(R.color.selectedItem));
             } else {
                 view.setBackgroundColor(Color.TRANSPARENT);
