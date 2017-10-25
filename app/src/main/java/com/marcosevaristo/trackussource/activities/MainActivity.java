@@ -8,6 +8,7 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
@@ -83,8 +84,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        carroId = telephonyManager.getDeviceId();
+        carroId = Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID);
 
         FirebaseUtils.startReferences(App.getLinhaAtual(), carroId);
 
@@ -189,19 +189,18 @@ public class MainActivity extends Activity {
         });
     }
 
-    private LatLng startLocationListener() {
+    private void startLocationListener() {
         CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(carroId));
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         String bestProvider = locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
+            return;
         }
-        Location location = locationManager.getLastKnownLocation(bestProvider);
-        locationManager.requestLocationUpdates(bestProvider, intervaloAtualizacaoLocalicazaoEmMilis,
+        Location location = locationManager.getLastKnownLocation("gps");
+        locationManager.requestLocationUpdates("gps", intervaloAtualizacaoLocalicazaoEmMilis,
                 distanciaMinimaParaAtualizarLocalizacaoEmMetros , carroLocationListener);
 
-        return new LatLng(location.getLatitude(), location.getLongitude());
     }
 
     private boolean possuiPermissoesNecessarias() {
