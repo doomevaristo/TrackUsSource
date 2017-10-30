@@ -68,21 +68,25 @@ public class MainActivity extends Activity {
     }
 
     private void setupTelaInicial() {
-        setupStatusLinhaIcon();
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        while (!possuiPermissoesNecessarias()) {
-            ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if(App.getMunicipio() == null) {
+            //TODO: pedir municipio
+        } else {
+            setupStatusLinhaIcon();
+            progressBar = (ProgressBar) findViewById(R.id.progressBar);
+            while (!possuiPermissoesNecessarias()) {
+                ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
+            FirebaseUtils.startReferences(App.getLinhaAtual(), App.getCarroId());
+
+            setupListViewLinhas();
+            setupBotaoIniciarLinha();
         }
-
-        FirebaseUtils.startReferences(App.getLinhaAtual(), App.getCarroId());
-
-        setupListViewLinhas();
-        setupBotaoIniciarLinha();
     }
 
     private void setupStatusLinhaIcon() {
