@@ -2,13 +2,13 @@ package com.marcosevaristo.trackussource.model;
 
 import java.util.List;
 
-public class Cidade {
+public class Municipio {
     private String id;
     private String nome;
     private Estado estado;
     private List<Linha> lLinhas;
 
-    public Cidade(String id) {
+    public Municipio(String id) {
         this.id = id;
     }
 

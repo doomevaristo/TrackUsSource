@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class Linha implements Serializable {
     private Long idSql;
-    private Cidade cidade;
+    private Municipio municipio;
     private String numero;
     private String titulo;
     private String subtitulo;
@@ -114,12 +114,12 @@ public class Linha implements Serializable {
         return sb.toString();
     }
 
-    public Cidade getCidade() {
-        return cidade;
+    public Municipio getMunicipio() {
+        return municipio;
     }
 
-    public void setCidade(Cidade cidade) {
-        this.cidade = cidade;
+    public void setMunicipio(Municipio municipio) {
+        this.municipio = municipio;
     }
 
     public boolean ehLinhaAtual() {

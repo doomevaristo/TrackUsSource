@@ -10,7 +10,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.marcosevaristo.trackussource.App;
-import com.marcosevaristo.trackussource.model.Cidade;
+import com.marcosevaristo.trackussource.model.Municipio;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 import com.marcosevaristo.trackussource.utils.StringUtils;
@@ -41,7 +41,7 @@ public class QueryBuilder {
             linhaAux.setNumero(cursor.getString(1));
             linhaAux.setTitulo(cursor.getString(2));
             linhaAux.setSubtitulo(cursor.getString(3));
-            linhaAux.setCidade(new Cidade(cursor.getString(4)));
+            linhaAux.setMunicipio(new Municipio(cursor.getString(4)));
             if(App.getLinhaAtual() != null) {
                 linhaAux.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(linhaAux.getIdSql()));
             }
@@ -63,6 +63,10 @@ public class QueryBuilder {
         return sb.toString();
     }
 
+    public static Municipio getMunicipioAtual() {
+
+    }
+
     public static Linha getLinhaAtual() {
         Linha linhaAux = null;
         Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllLinhaAtual(), null);
@@ -75,7 +79,7 @@ public class QueryBuilder {
             linhaAux.setNumero(cursor.getString(1));
             linhaAux.setTitulo(cursor.getString(2));
             linhaAux.setSubtitulo(cursor.getString(3));
-            linhaAux.setCidade(new Cidade(cursor.getString(4)));
+            linhaAux.setMunicipio(new Municipio(cursor.getString(4)));
             break;
         }
 
@@ -100,7 +104,7 @@ public class QueryBuilder {
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO, umaLinha.getNumero());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_TITULO, umaLinha.getTitulo());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_SUBTITULO, umaLinha.getSubtitulo());
-            //values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, linha.getCidade().getId());
+            //values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, linha.getMunicipio().getId());
             umaLinha.setIdSql(db.insert(SQLiteObjectsHelper.TLinhas.TABLE_NAME, null, values));
         }
 

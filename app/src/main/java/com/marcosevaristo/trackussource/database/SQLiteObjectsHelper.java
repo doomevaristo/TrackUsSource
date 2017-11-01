@@ -77,6 +77,21 @@ public class SQLiteObjectsHelper {
         }
     }
 
+    public static class TMunicipioAtual implements BaseColumns, OperacoesComColunas {
+
+        @Override
+        public String getColunasParaSelect() {
+            StringBuilder sb = new StringBuilder();
+
+            return sb.toString();
+        }
+
+        @Override
+        public String getCreateEntry() {
+            return null;
+        }
+    }
+
 
 
 }
