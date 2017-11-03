@@ -15,6 +15,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
 import com.marcosevaristo.trackussource.adapters.MunicipiosAdapter;
@@ -83,9 +84,7 @@ public class SelecionaMunicipio extends AppCompatActivity {
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
+                public void onCancelled(DatabaseError databaseError) {}
             };
             queryRef.addListenerForSingleValueEvent(evento);
         } else {
@@ -115,9 +114,9 @@ public class SelecionaMunicipio extends AppCompatActivity {
                 if(municipioSelecionado != null) {
                     QueryBuilder.atualizaMunicipioAtual(municipioSelecionado);
                     if(App.getMunicipio() != null) {
+                        CarroLocationListener.stop();
                         Toast.makeText(App.getAppContext(), R.string.iniciar_linha, Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(App.getAppContext(), SelecionaMunicipio.class);
-                        startActivity(intent);
+                        startActivity(new Intent(App.getAppContext(), SelecionaMunicipio.class));
                     }
                 } else {
                     Toast.makeText(App.getAppContext(), R.string.nenhum_municipio_selecionado, Toast.LENGTH_LONG).show();
@@ -125,5 +124,4 @@ public class SelecionaMunicipio extends AppCompatActivity {
             }
         });
     }
-
 }

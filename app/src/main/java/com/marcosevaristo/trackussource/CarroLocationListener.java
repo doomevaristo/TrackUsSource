@@ -25,6 +25,7 @@ public class CarroLocationListener implements LocationListener {
     private static final Long INTERVALO_UPDATE_LOCAL_EM_MILIS = 5000L;
     private static final Float DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS = 10.0f;
     private static LocationManager locationManager;
+    private static CarroLocationListener listenerInstance;
 
     public CarroLocationListener(Carro carro) {
         this.carro = carro;
@@ -82,19 +83,21 @@ public class CarroLocationListener implements LocationListener {
     }
 
     public static void start() {
-        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(App.getCarroId()));
+        listenerInstance = new CarroLocationListener(new Carro(App.getCarroId()));
         locationManager = (LocationManager) App.getAppContext().getSystemService(App.getAppContext().LOCATION_SERVICE);
-        String provider = locationManager.getBestProvider(new Criteria(), false);
+        locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         locationManager.getLastKnownLocation("gps");
         locationManager.requestLocationUpdates("gps", INTERVALO_UPDATE_LOCAL_EM_MILIS,
-                DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS, carroLocationListener);
+                DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS, listenerInstance);
     }
 
     public static void stop() {
-
+        if(listenerInstance != null) {
+            locationManager.removeUpdates(listenerInstance);
+        }
     }
 }
