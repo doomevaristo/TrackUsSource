@@ -3,20 +3,22 @@ package com.marcosevaristo.trackussource.model;
 import java.util.List;
 
 public class Municipio {
-    private String id;
+    private Long id;
     private String nome;
-    private Estado estado;
     private List<Linha> lLinhas;
+    private boolean ehMunicipioAtual;
 
-    public Municipio(String id) {
+    public Municipio(){}
+
+    public Municipio(Long id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getNome() {
@@ -27,19 +29,19 @@ public class Municipio {
         this.nome = nome;
     }
 
-    public Estado getEstado() {
-        return estado;
-    }
-
-    public void setEstado(Estado estado) {
-        this.estado = estado;
-    }
-
     public List<Linha> getlLinhas() {
         return lLinhas;
     }
 
     public void setlLinhas(List<Linha> lLinhas) {
         this.lLinhas = lLinhas;
+    }
+
+    public boolean isEhMunicipioAtual() {
+        return ehMunicipioAtual;
+    }
+
+    public void setEhMunicipioAtual(boolean ehMunicipioAtual) {
+        this.ehMunicipioAtual = ehMunicipioAtual;
     }
 }

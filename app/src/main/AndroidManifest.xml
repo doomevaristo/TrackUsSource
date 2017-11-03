@@ -28,8 +28,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".SelecionaMunicipio" />
-        <activity android:name=".ControleDeLinha"></activity>
+        <activity android:name=".activities.SelecionaMunicipio" />
+        <activity android:name=".activities.ControleDeLinha"></activity>
     </application>
 
 </manifest>

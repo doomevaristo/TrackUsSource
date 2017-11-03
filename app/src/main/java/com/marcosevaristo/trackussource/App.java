@@ -6,13 +6,14 @@ import android.provider.Settings;
 
 import com.marcosevaristo.trackussource.database.SQLiteHelper;
 import com.marcosevaristo.trackussource.model.Linha;
+import com.marcosevaristo.trackussource.model.Municipio;
 
 public class App extends Application {
     private static Context context;
     private static SQLiteHelper sqLiteHelper;
     private static Linha linhaAtual;
     private static String carroId;
-    private static String municipio;
+    private static Municipio municipio;
 
     public void onCreate() {
         super.onCreate();
@@ -41,10 +42,10 @@ public class App extends Application {
         return carroId;
     }
 
-    public static String getMunicipio() {
+    public static Municipio getMunicipio() {
         return municipio;
     }
-    public static void setMunicipio(String municipio) {
+    public static void setMunicipio(Municipio municipio) {
         App.municipio = municipio;
     }
 }

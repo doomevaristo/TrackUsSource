@@ -1,7 +1,9 @@
-package com.marcosevaristo.trackussource;
+package com.marcosevaristo.trackussource.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.marcosevaristo.trackussource.R;
 
 public class SelecionaMunicipio extends AppCompatActivity {
 

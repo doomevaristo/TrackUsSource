@@ -30,27 +30,60 @@ public class QueryBuilder {
 
     public static List<Linha> getLinhas(String nroLinha) {
         List<Linha> lLinhas = new ArrayList<>();
-        Linha linhaAux = null;
+        Linha linhaAux;
         Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllLinhas(nroLinha), null);
         if(cursor != null) {
             cursor.moveToFirst();
-        }
-        for (int i = 0; i < cursor.getCount(); i++) {
-            linhaAux = new Linha();
-            linhaAux.setIdSql(cursor.getLong(0));
-            linhaAux.setNumero(cursor.getString(1));
-            linhaAux.setTitulo(cursor.getString(2));
-            linhaAux.setSubtitulo(cursor.getString(3));
-            linhaAux.setMunicipio(new Municipio(cursor.getString(4)));
-            if(App.getLinhaAtual() != null) {
-                linhaAux.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(linhaAux.getIdSql()));
+            for (int i = 0; i < cursor.getCount(); i++) {
+                linhaAux = new Linha();
+                linhaAux.setIdSql(cursor.getLong(0));
+                linhaAux.setNumero(cursor.getString(1));
+                linhaAux.setTitulo(cursor.getString(2));
+                linhaAux.setSubtitulo(cursor.getString(3));
+                linhaAux.setMunicipio(new Municipio(cursor.getLong(4)));
+                if(App.getLinhaAtual() != null) {
+                    linhaAux.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(linhaAux.getIdSql()));
+                }
+                lLinhas.add(linhaAux);
+                cursor.moveToNext();
             }
-            lLinhas.add(linhaAux);
-            cursor.moveToNext();
+
+            cursor.close();
         }
 
-        cursor.close();
         return lLinhas;
+    }
+
+    public static List<Municipio> getMunicipios(Long municipioID) {
+        List<Municipio> lLinhas = new ArrayList<>();
+        Municipio municipioAux;
+        Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllMunicipios(municipioID), null);
+        if(cursor != null) {
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getCount(); i++) {
+                municipioAux = new Municipio();
+                municipioAux.setId(cursor.getLong(0));
+                municipioAux.setNome(cursor.getString(1));
+                if(App.getMunicipio() != null) {
+                    municipioAux.setEhMunicipioAtual(App.getMunicipio().getId().equals(municipioAux.getId()));
+                }
+                lLinhas.add(municipioAux);
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+        }
+        return lLinhas;
+    }
+
+    private static String getSelectAllMunicipios(Long municipioID) {
+        StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TMunicipios.getInstance().getColunasParaSelect()).append(" FROM ");
+        sb.append(SQLiteObjectsHelper.TMunicipios.TABLE_NAME).append(" MUN ");
+        if(municipioID != null) {
+            sb.append(" WHERE ").append(SQLiteObjectsHelper.TMunicipios._ID).append(" = ").append(municipioID.toString());
+        }
+        sb.append(" ORDER BY ").append(SQLiteObjectsHelper.TMunicipios.COLUMN_MUNNOME).append(" DESC");
+        return sb.toString();
     }
 
     private static String getSelectAllLinhas(String nroLinha) {
@@ -64,7 +97,27 @@ public class QueryBuilder {
     }
 
     public static Municipio getMunicipioAtual() {
+        Municipio municipioAux = null;
+        Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllMunicipioAtual(), null);
+        if(cursor != null) {
+            cursor.moveToFirst();
 
+            municipioAux = new Municipio();
+            municipioAux.setId(cursor.getLong(0));
+            municipioAux.setNome(cursor.getString(1));
+
+            cursor.close();
+        }
+
+        return municipioAux;
+    }
+
+    private static String getSelectAllMunicipioAtual() {
+        StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TMunicipios.getInstance().getColunasParaSelect()).append(" FROM ");
+        sb.append(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME).append(" MUA ");
+        sb.append(" INNER JOIN ").append(SQLiteObjectsHelper.TMunicipios.TABLE_NAME).append(" MUN ON MUN.");
+        sb.append(SQLiteObjectsHelper.TMunicipios._ID).append(" = MUA.").append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUAID);
+        return sb.toString();
     }
 
     public static Linha getLinhaAtual() {
@@ -72,18 +125,16 @@ public class QueryBuilder {
         Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllLinhaAtual(), null);
         if(cursor != null) {
             cursor.moveToFirst();
-        }
-        for (int i = 0; i < cursor.getCount(); i++) {
             linhaAux = new Linha();
             linhaAux.setIdSql(cursor.getLong(0));
             linhaAux.setNumero(cursor.getString(1));
             linhaAux.setTitulo(cursor.getString(2));
             linhaAux.setSubtitulo(cursor.getString(3));
-            linhaAux.setMunicipio(new Municipio(cursor.getString(4)));
-            break;
+            linhaAux.setMunicipio(new Municipio(cursor.getLong(4)));
+
+            cursor.close();
         }
 
-        cursor.close();
         return linhaAux;
     }
 
@@ -104,7 +155,7 @@ public class QueryBuilder {
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO, umaLinha.getNumero());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_TITULO, umaLinha.getTitulo());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_SUBTITULO, umaLinha.getSubtitulo());
-            //values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, linha.getMunicipio().getId());
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, umaLinha.getMunicipio().getId());
             umaLinha.setIdSql(db.insert(SQLiteObjectsHelper.TLinhas.TABLE_NAME, null, values));
         }
 

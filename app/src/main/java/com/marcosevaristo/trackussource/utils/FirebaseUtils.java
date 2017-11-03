@@ -2,31 +2,42 @@ package com.marcosevaristo.trackussource.utils;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.marcosevaristo.trackussource.constants.FirebaseConstants;
-import com.marcosevaristo.trackussource.model.Linha;
+import com.marcosevaristo.trackussource.App;
 
 public class FirebaseUtils {
 
     private static FirebaseDatabase database;
+    private static DatabaseReference databaseReferenceMunicipio;
     private static DatabaseReference databaseReferenceCarro;
     private static DatabaseReference databaseReferenceLinhas;
 
-    public static void startReferences(Linha linhaAtual, String idCarro) {
-        if(linhaAtual != null) {
-            startReferenceCarro(linhaAtual, idCarro);
+    private static final String NODE_MUNICIPIOS = "municipios";
+    private static final String NODE_LINHAS = "linhas";
+    private static final String NODE_CARROS = "carros";
+
+    public static void startReferences() {
+        startReferenceMunicipios();
+        if(App.getMunicipio() != null) {
+            startReferenceLinhas();
+            if(App.getLinhaAtual() != null && StringUtils.isNotBlank(App.getCarroId())) {
+                startReferenceCarro();
+            }
         }
-        startReferenceLinhas();
     }
 
-    public static void startReferenceCarro(Linha linhaAtual, String idCarro) {
-        databaseReferenceCarro = getDatabase().getReference().child(FirebaseConstants.NODE_MUNICIPIOS)
-                .child(FirebaseConstants.NODE_LINHAS).child(linhaAtual.getNumero()).child(FirebaseConstants.NODE_CARROS).child(idCarro);
+    private static void startReferenceMunicipios() {
+        databaseReferenceMunicipio = getDatabase().getReference().child(NODE_MUNICIPIOS);
     }
 
-    public static void startReferenceLinhas() {
+    private static void startReferenceCarro() {
+        databaseReferenceCarro = getDatabase().getReference().child(NODE_MUNICIPIOS).child(App.getMunicipio().getId().toString())
+                .child(NODE_LINHAS).child(App.getLinhaAtual().getNumero()).child(NODE_CARROS).child(App.getCarroId());
+    }
+
+    private static void startReferenceLinhas() {
         if(databaseReferenceLinhas == null) {
-            databaseReferenceLinhas = getDatabase().getReference().child(FirebaseConstants.NODE_MUNICIPIOS)
-                    .child(FirebaseConstants.NODE_LINHAS);
+            databaseReferenceLinhas = getDatabase().getReference().child(NODE_MUNICIPIOS)
+                    .child(App.getMunicipio().getId().toString()).child(NODE_LINHAS);
         }
     }
 
@@ -43,5 +54,9 @@ public class FirebaseUtils {
 
     public static DatabaseReference getLinhasReference() {
         return databaseReferenceLinhas;
+    }
+
+    public static DatabaseReference getMunicipioReference() {
+        return databaseReferenceMunicipio;
     }
 }

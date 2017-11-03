@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.marcosevaristo.trackussource.ControleDeLinha">
+    android:id="@+id/layoutControleLinha"
+    android:background="#FFFFFF"
+    tools:context="com.marcosevaristo.trackussource.activities.ControleDeLinha">
 
-</android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:id="@+id/statusLinhaIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        style="?android:attr/android:progressBarStyle" />
+
+    <ListView
+        android:id="@+id/listViewLinhas"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listLinhasHeight"
+        android:layout_marginTop="@dimen/listLinhasMarginTop"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:fadeScrollbars="false"
+        android:divider="@android:color/black"
+        android:dividerHeight="4sp"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@drawable/selector" />
+
+    <Button
+        android:id="@+id/btIniciar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btIniciar"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
