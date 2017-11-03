@@ -88,8 +88,6 @@ public class Linha implements Serializable {
             }
             lLinhas.add(new Linha(null, numeroAux, tituloAux, subTituloAux));
         }
-
-
         return lLinhas;
     }
 

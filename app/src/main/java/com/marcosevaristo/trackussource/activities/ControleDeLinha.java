@@ -165,7 +165,7 @@ public class ControleDeLinha extends AppCompatActivity {
                 if(linhaSelecionada != null) {
                     QueryBuilder.atualizaLinhaAtual(linhaSelecionada, App.getCarroId());
                     if(App.getLinhaAtual() != null) {
-                        startLocationListener();
+                        CarroLocationListener.start();
                     }
                     setupStatusLinhaIcon();
                 } else {

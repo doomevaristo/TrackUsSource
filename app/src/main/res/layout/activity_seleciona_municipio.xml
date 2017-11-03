@@ -8,4 +8,23 @@
     android:background="#FFFFFF"
     tools:context="com.marcosevaristo.trackussource.activities.SelecionaMunicipio">
 
+    <ListView
+        android:id="@+id/listViewMunicipios"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/listMunicipiosHeight"
+        android:layout_marginTop="@dimen/listMunicipiosMarginTop"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:fadeScrollbars="false"
+        android:divider="@android:color/black"
+        android:dividerHeight="4sp"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@drawable/selector" />
+
+    <Button
+        android:id="@+id/btSelecionar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btSelecionar"
+        android:layout_alignParentBottom="true"/>
+
 </RelativeLayout>

@@ -1,10 +1,15 @@
 package com.marcosevaristo.trackussource;
 
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 
 import com.google.firebase.database.Query;
 import com.marcosevaristo.trackussource.model.Carro;
@@ -16,7 +21,10 @@ import java.util.Locale;
 
 public class CarroLocationListener implements LocationListener {
 
-    Carro carro;
+    private Carro carro;
+    private static final Long INTERVALO_UPDATE_LOCAL_EM_MILIS = 5000L;
+    private static final Float DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS = 10.0f;
+    private static LocationManager locationManager;
 
     public CarroLocationListener(Carro carro) {
         this.carro = carro;
@@ -71,5 +79,22 @@ public class CarroLocationListener implements LocationListener {
             //et_lugar.setText("Canont get Address!");
         }
         return null;
+    }
+
+    public static void start() {
+        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(App.getCarroId()));
+        locationManager = (LocationManager) App.getAppContext().getSystemService(App.getAppContext().LOCATION_SERVICE);
+        String provider = locationManager.getBestProvider(new Criteria(), false);
+        if (ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager.getLastKnownLocation("gps");
+        locationManager.requestLocationUpdates("gps", INTERVALO_UPDATE_LOCAL_EM_MILIS,
+                DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS, carroLocationListener);
+    }
+
+    public static void stop() {
+
     }
 }

@@ -2,4 +2,7 @@
 <resources>
     <dimen name="listLinhasHeight">500dp</dimen>
     <dimen name="listLinhasMarginTop">30dp</dimen>
+
+    <dimen name="listMunicipiosHeight">500dp</dimen>
+    <dimen name="listMunicipiosMarginTop">30dp</dimen>
 </resources>

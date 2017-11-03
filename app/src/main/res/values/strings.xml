@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">TrackUsSource</string>
-    <string name="btIniciar">Iniciar Linha</string>
+    <string name="btIniciar">Iniciar linha</string>
+    <string name="btSelecionar">Selecionar município</string>
 
     <!-- ALERTS -->
     <string name="nenhum_resultado">Não foram encontrados resultados na busca</string>
     <string name="nenhuma_linha_selecionada">Selecione uma linha para iniciar o rastreamento</string>
+    <string name="nenhum_municipio_selecionado">Selecione um município</string>
+    <string name="iniciar_linha">Inicie uma linha</string>
 
     <string name="google_maps_key">AIzaSyBTJIM-_P4CdRqBYAx08yzJMkW20yt8RVI</string>
 </resources>

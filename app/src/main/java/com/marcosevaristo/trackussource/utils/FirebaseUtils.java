@@ -3,11 +3,12 @@ package com.marcosevaristo.trackussource.utils;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.model.Linha;
 
 public class FirebaseUtils {
 
     private static FirebaseDatabase database;
-    private static DatabaseReference databaseReferenceMunicipio;
+    private static DatabaseReference databaseReferenceMunicipios;
     private static DatabaseReference databaseReferenceCarro;
     private static DatabaseReference databaseReferenceLinhas;
 
@@ -20,18 +21,18 @@ public class FirebaseUtils {
         if(App.getMunicipio() != null) {
             startReferenceLinhas();
             if(App.getLinhaAtual() != null && StringUtils.isNotBlank(App.getCarroId())) {
-                startReferenceCarro();
+                startReferenceCarro(App.getLinhaAtual().getNumero(), App.getCarroId());
             }
         }
     }
 
     private static void startReferenceMunicipios() {
-        databaseReferenceMunicipio = getDatabase().getReference().child(NODE_MUNICIPIOS);
+        databaseReferenceMunicipios = getDatabase().getReference().child(NODE_MUNICIPIOS);
     }
 
-    private static void startReferenceCarro() {
+    public static void startReferenceCarro(String numeroLinha, String carroId) {
         databaseReferenceCarro = getDatabase().getReference().child(NODE_MUNICIPIOS).child(App.getMunicipio().getId().toString())
-                .child(NODE_LINHAS).child(App.getLinhaAtual().getNumero()).child(NODE_CARROS).child(App.getCarroId());
+                .child(NODE_LINHAS).child(numeroLinha).child(NODE_CARROS).child(carroId);
     }
 
     private static void startReferenceLinhas() {
@@ -56,7 +57,7 @@ public class FirebaseUtils {
         return databaseReferenceLinhas;
     }
 
-    public static DatabaseReference getMunicipioReference() {
-        return databaseReferenceMunicipio;
+    public static DatabaseReference getMunicipiosReference() {
+        return databaseReferenceMunicipios;
     }
 }

@@ -116,7 +116,7 @@ public class QueryBuilder {
         StringBuilder sb = new StringBuilder("SELECT ").append(SQLiteObjectsHelper.TMunicipios.getInstance().getColunasParaSelect()).append(" FROM ");
         sb.append(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME).append(" MUA ");
         sb.append(" INNER JOIN ").append(SQLiteObjectsHelper.TMunicipios.TABLE_NAME).append(" MUN ON MUN.");
-        sb.append(SQLiteObjectsHelper.TMunicipios._ID).append(" = MUA.").append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUAID);
+        sb.append(SQLiteObjectsHelper.TMunicipios._ID).append(" = MUA.").append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID);
         return sb.toString();
     }
 
@@ -189,7 +189,7 @@ public class QueryBuilder {
 
     private static void alteraLinhaAtualFirebase(final Linha novaLinha, final String carroId) {
         queryRefLinhaAtualOld = FirebaseUtils.getCarroReference();
-        FirebaseUtils.startReferenceCarro(novaLinha, carroId);
+        FirebaseUtils.startReferenceCarro(novaLinha.getNumero(), carroId);
         queryRefNovaLinha = FirebaseUtils.getCarroReference();
 
         if(queryRefLinhaAtualOld != null) { //Alterou linha
@@ -234,5 +234,27 @@ public class QueryBuilder {
                 }
             });
         }
+    }
+
+    public static void atualizaMunicipioAtual(Municipio municipioSelecionado) {
+        SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+        Municipio novoMunicipio = getMunicipios(municipioSelecionado.getId()).get(0);
+        Municipio municipioAtualOld = getMunicipioAtual();
+        ContentValues values = new ContentValues();
+        values.put(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID, novoMunicipio.getId());
+        if(municipioAtualOld == null) {
+            db.beginTransaction();
+            novoMunicipio.setId(db.insert(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, null, values));
+        } else {
+            StringBuilder whereClause = new StringBuilder();
+            whereClause.append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID).append(" = ?");
+            db.beginTransaction();
+            db.update(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, values, whereClause.toString(), new String[]{municipioAtualOld.getId().toString()});
+        }
+
+        App.setMunicipio(novoMunicipio);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 }

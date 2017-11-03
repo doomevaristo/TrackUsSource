@@ -111,7 +111,7 @@ public class SQLiteObjectsHelper {
     public static class TMunicipioAtual implements BaseColumns, OperacoesComColunas {
 
         public static final String TABLE_NAME = "TB_MUNICIPIO_ATUAL";
-        public static final String COLUMN_MUAID = "MUA_MUNID";
+        public static final String COLUMN_MUNICIPIOID = "MUA_MUNID";
 
         private static TMunicipioAtual instance;
 
@@ -125,7 +125,7 @@ public class SQLiteObjectsHelper {
         @Override
         public String getColunasParaSelect() {
             StringBuilder sb = new StringBuilder();
-            sb.append("MUN.").append(_ID).append(", ").append(", ").append(COLUMN_MUAID);
+            sb.append("MUN.").append(_ID).append(", ").append(", ").append(COLUMN_MUNICIPIOID);
             return sb.toString();
         }
 
@@ -134,8 +134,8 @@ public class SQLiteObjectsHelper {
             StringBuilder sb = new StringBuilder();
             sb.append("CREATE TABLE ").append(TABLE_NAME);
             sb.append(" (").append(_ID).append(" INTEGER NOT NULL PRIMARY KEY ");
-            sb.append(", ").append(COLUMN_MUAID).append(" INTEGER NOT NULL ");
-            sb.append(", FOREIGN KEY (").append(COLUMN_MUAID).append(") REFERENCES ").append(TMunicipios.TABLE_NAME).append("(")
+            sb.append(", ").append(COLUMN_MUNICIPIOID).append(" INTEGER NOT NULL ");
+            sb.append(", FOREIGN KEY (").append(COLUMN_MUNICIPIOID).append(") REFERENCES ").append(TMunicipios.TABLE_NAME).append("(")
                     .append(TLinhas._ID).append(") ON DELETE CASCADE");
             sb.append(");");
             return sb.toString();
