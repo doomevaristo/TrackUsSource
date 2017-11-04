@@ -17,12 +17,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
-import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
 import com.marcosevaristo.trackussource.adapters.MunicipiosAdapter;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
-import com.marcosevaristo.trackussource.dto.ListaLinhasDTO;
 import com.marcosevaristo.trackussource.dto.ListaMunicipiosDTO;
-import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.model.Municipio;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
@@ -65,16 +62,17 @@ public class SelecionaMunicipio extends AppCompatActivity {
             ValueEventListener evento = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Map mapValues = (Map) dataSnapshot.getValue();
+                    List<Map<String, Object>> mapValues = (List<Map<String, Object>>) dataSnapshot.getValue();
                     if (mapValues != null) {
                         lMunicipios = new ListaMunicipiosDTO();
-                        List<Municipio> lMunicipiosAux = Municipio.converteMapParaListaMunicipios(mapValues);
+                        List<Municipio> lMunicipiosAux = Municipio.converteListMapParaListaMunicipios(mapValues);
+                        QueryBuilder.insereMunicipios(lMunicipiosAux);
                         for(Municipio umMunicipio : lMunicipiosAux) {
-                            if(App.getLinhaAtual() == null) break;
+                            if(App.getMunicipio() == null) break;
                             umMunicipio.setEhMunicipioAtual(App.getMunicipio().getId().equals(umMunicipio.getId()));
                         }
                         lMunicipios.addMunicipios(lMunicipiosAux);
-                        adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lMunicipios.getlMunicipios());
+                        adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios.getlMunicipios());
                         adapter.notifyDataSetChanged();
                         listViewMunicipios.setAdapter(adapter);
                     } else {
@@ -116,7 +114,7 @@ public class SelecionaMunicipio extends AppCompatActivity {
                     if(App.getMunicipio() != null) {
                         CarroLocationListener.stop();
                         Toast.makeText(App.getAppContext(), R.string.iniciar_linha, Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(App.getAppContext(), SelecionaMunicipio.class));
+                        startActivity(new Intent(App.getAppContext(), ControleDeLinha.class));
                     }
                 } else {
                     Toast.makeText(App.getAppContext(), R.string.nenhum_municipio_selecionado, Toast.LENGTH_LONG).show();

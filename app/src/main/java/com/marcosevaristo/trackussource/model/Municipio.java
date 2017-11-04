@@ -68,27 +68,37 @@ public class Municipio {
         return sb.toString();
     }
 
-    public static List<Municipio> converteMapParaListaMunicipios(Map mapValues) {
+    public static List<Municipio> converteListMapParaListaMunicipios(List<Map<String, Object>> mapValues) {
         List<Municipio> lMunicipios = new ArrayList<>();
         Long idAux = null;
         String nomeAux = null;
-        for(Object umMunicipioIdObj : mapValues.keySet()) {
-            Map<Object, Object> mapUmMunicipio = (Map<Object, Object>) mapValues.get(umMunicipioIdObj);
-            for(Object umaKeyAux : mapUmMunicipio.keySet()) {
-                String umaKey = umaKeyAux.toString();
-                switch(umaKey) {
-                    case "id":
-                        idAux = (Long) mapUmMunicipio.get(umaKeyAux);
-                        break;
-                    case "nome":
-                        nomeAux = mapUmMunicipio.get(umaKeyAux).toString();
-                        break;
-                    default:
-                        break;
+        List<Linha> listLinhas = null;
+        Municipio municipioAux;
+
+        for(Map<String, Object> umMunicipio : mapValues) {
+            if(umMunicipio != null) {
+                for(String umAtributoMun : umMunicipio.keySet()) {
+                    switch(umAtributoMun) {
+                        case "id":
+                            idAux = (Long) umMunicipio.get(umAtributoMun);
+                            break;
+                        case "nome":
+                            nomeAux = umMunicipio.get(umAtributoMun).toString();
+                            break;
+                        case "linhas":
+                            listLinhas = Linha.converteMapParaListaLinhas((Map)umMunicipio.get(umAtributoMun));
+                        default:
+                            break;
+                    }
                 }
+                municipioAux = new Municipio();
+                municipioAux.setId(idAux);
+                municipioAux.setNome(nomeAux);
+                municipioAux.setlLinhas(listLinhas);
+                lMunicipios.add(municipioAux);
             }
-            lMunicipios.add(new Municipio(idAux, nomeAux));
         }
+
         return lMunicipios;
     }
 }

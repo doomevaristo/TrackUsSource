@@ -12,7 +12,6 @@
         android:id="@+id/listViewMunicipios"
         android:layout_width="match_parent"
         android:layout_height="@dimen/listMunicipiosHeight"
-        android:layout_marginTop="@dimen/listMunicipiosMarginTop"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         android:fadeScrollbars="false"
         android:divider="@android:color/black"

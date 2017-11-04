@@ -102,9 +102,11 @@ public class QueryBuilder {
         if(cursor != null) {
             cursor.moveToFirst();
 
-            municipioAux = new Municipio();
-            municipioAux.setId(cursor.getLong(0));
-            municipioAux.setNome(cursor.getString(1));
+            if(cursor.getCount() > 0) {
+                municipioAux = new Municipio();
+                municipioAux.setId(cursor.getLong(0));
+                municipioAux.setNome(cursor.getString(1));
+            }
 
             cursor.close();
         }
@@ -125,12 +127,14 @@ public class QueryBuilder {
         Cursor cursor = sqLiteHelper.getReadableDatabase().rawQuery(getSelectAllLinhaAtual(), null);
         if(cursor != null) {
             cursor.moveToFirst();
-            linhaAux = new Linha();
-            linhaAux.setIdSql(cursor.getLong(0));
-            linhaAux.setNumero(cursor.getString(1));
-            linhaAux.setTitulo(cursor.getString(2));
-            linhaAux.setSubtitulo(cursor.getString(3));
-            linhaAux.setMunicipio(new Municipio(cursor.getLong(4)));
+            if(cursor.getCount() > 0) {
+                linhaAux = new Linha();
+                linhaAux.setIdSql(cursor.getLong(0));
+                linhaAux.setNumero(cursor.getString(1));
+                linhaAux.setTitulo(cursor.getString(2));
+                linhaAux.setSubtitulo(cursor.getString(3));
+                linhaAux.setMunicipio(new Municipio(cursor.getLong(4)));
+            }
 
             cursor.close();
         }
@@ -155,7 +159,7 @@ public class QueryBuilder {
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO, umaLinha.getNumero());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_TITULO, umaLinha.getTitulo());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_SUBTITULO, umaLinha.getSubtitulo());
-            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, umaLinha.getMunicipio().getId());
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_CIDADE, App.getMunicipio().getId());
             umaLinha.setIdSql(db.insert(SQLiteObjectsHelper.TLinhas.TABLE_NAME, null, values));
         }
 
@@ -249,10 +253,26 @@ public class QueryBuilder {
             StringBuilder whereClause = new StringBuilder();
             whereClause.append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID).append(" = ?");
             db.beginTransaction();
-            db.update(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, values, whereClause.toString(), new String[]{municipioAtualOld.getId().toString()});
+            db.update(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, values, whereClause.toString(),
+                    new String[]{municipioAtualOld.getId().toString()});
         }
 
         App.setMunicipio(novoMunicipio);
+
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public static void insereMunicipios(List<Municipio> lMunicipiosAux) {
+        SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        db.beginTransaction();
+        for (Municipio umMunicipio : lMunicipiosAux) {
+            values.put(SQLiteObjectsHelper.TMunicipios._ID, umMunicipio.getId());
+            values.put(SQLiteObjectsHelper.TMunicipios.COLUMN_MUNNOME, umMunicipio.getNome());
+            umMunicipio.setId(db.insert(SQLiteObjectsHelper.TMunicipios.TABLE_NAME, null, values));
+        }
 
         db.setTransactionSuccessful();
         db.endTransaction();

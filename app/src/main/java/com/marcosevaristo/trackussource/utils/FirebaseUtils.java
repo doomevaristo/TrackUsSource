@@ -26,7 +26,7 @@ public class FirebaseUtils {
         }
     }
 
-    private static void startReferenceMunicipios() {
+    public static void startReferenceMunicipios() {
         databaseReferenceMunicipios = getDatabase().getReference().child(NODE_MUNICIPIOS);
     }
 
@@ -50,14 +50,17 @@ public class FirebaseUtils {
     }
 
     public static DatabaseReference getCarroReference() {
+        if(databaseReferenceCarro == null) startReferenceCarro(App.getLinhaAtual().getNumero(), App.getCarroId());
         return databaseReferenceCarro;
     }
 
     public static DatabaseReference getLinhasReference() {
+        if(databaseReferenceLinhas == null) startReferenceLinhas();
         return databaseReferenceLinhas;
     }
 
     public static DatabaseReference getMunicipiosReference() {
+        if(databaseReferenceMunicipios == null) startReferenceMunicipios();
         return databaseReferenceMunicipios;
     }
 }

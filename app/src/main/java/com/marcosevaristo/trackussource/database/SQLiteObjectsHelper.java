@@ -93,7 +93,7 @@ public class SQLiteObjectsHelper {
         @Override
         public String getColunasParaSelect() {
             StringBuilder sb = new StringBuilder();
-            sb.append("MUN.").append(_ID).append(", ").append(", ").append(COLUMN_MUNNOME);
+            sb.append("MUN.").append(_ID).append(", ").append(COLUMN_MUNNOME);
             return sb.toString();
         }
 

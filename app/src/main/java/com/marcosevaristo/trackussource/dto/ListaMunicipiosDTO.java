@@ -3,7 +3,9 @@ package com.marcosevaristo.trackussource.dto;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.model.Municipio;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
+import com.marcosevaristo.trackussource.utils.NumberUtils;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,7 @@ public class ListaMunicipiosDTO {
             }
             for(Municipio umMunicipio : lista) {
                 if(findMunicipioByNomeOuID(umMunicipio.getId().toString()) == null
-                        && this.findMunicipioByNomeOuID(umMunicipio.getNome()) == null) {
+                        && findMunicipioByNomeOuID(umMunicipio.getNome()) == null) {
                     lMunicipios.add(umMunicipio);
                 }
             }
@@ -40,7 +42,7 @@ public class ListaMunicipiosDTO {
     private Municipio findMunicipioByNomeOuID(String arg) {
         if(CollectionUtils.isNotEmpty(this.lMunicipios)) {
             for(Municipio umMunicipio : this.lMunicipios) {
-                if(umMunicipio.getId().equals(Long.valueOf(arg)) || umMunicipio.getNome().equals(arg)) {
+                if((NumberUtils.isNumber(arg) && umMunicipio.getId().equals(NumberUtils.toLong(arg))) || umMunicipio.getNome().equals(arg)) {
                     return umMunicipio;
                 }
             }
