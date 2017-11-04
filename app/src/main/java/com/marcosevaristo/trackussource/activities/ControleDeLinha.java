@@ -2,6 +2,7 @@ package com.marcosevaristo.trackussource.activities;
 
 import android.*;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -44,9 +45,6 @@ public class ControleDeLinha extends AppCompatActivity {
     private ArrayAdapter adapter;
     private ListaLinhasDTO lLinhas;
 
-    private final Long INTERVALO_UPDATE_LOCAL_EM_MILIS = 5000L;
-    private final Float distanciaMinimaParaAtualizarLocalizacaoEmMetros = 10.0f;
-
     private final String[] PERMISSOES_NECESSARIAS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION};
 
@@ -57,6 +55,15 @@ public class ControleDeLinha extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(com.marcosevaristo.trackussource.R.layout.activity_controle_de_linha);
         setupTelaInicial();
+
+        if(App.getLinhaAtual() != null) {
+            CarroLocationListener.start();
+            emiteMensagemLinhaIniciada();
+        }
+    }
+
+    private void emiteMensagemLinhaIniciada() {
+        Toast.makeText(App.getAppContext(), App.getAppContext().getString(R.string.linha_iniciada, App.getLinhaAtual().getNumero()), Toast.LENGTH_LONG).show();
     }
 
     private void setupTelaInicial() {
@@ -168,6 +175,8 @@ public class ControleDeLinha extends AppCompatActivity {
                         CarroLocationListener.start();
                     }
                     setupStatusLinhaIcon();
+                    emiteMensagemLinhaIniciada();
+                    minimizar();
                 } else {
                     Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
                 }
@@ -175,18 +184,11 @@ public class ControleDeLinha extends AppCompatActivity {
         });
     }
 
-    private void startLocationListener() {
-        CarroLocationListener carroLocationListener = new CarroLocationListener(new Carro(App.getCarroId()));
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        locationManager.getBestProvider(new Criteria(), false);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.getLastKnownLocation("gps");
-        locationManager.requestLocationUpdates("gps", INTERVALO_UPDATE_LOCAL_EM_MILIS,
-                distanciaMinimaParaAtualizarLocalizacaoEmMetros , carroLocationListener);
-
+    private void minimizar() {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
     }
 
     private boolean possuiPermissoesNecessarias() {

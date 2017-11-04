@@ -8,6 +8,7 @@
     <string name="nenhuma_linha_selecionada">Selecione uma linha para iniciar o rastreamento</string>
     <string name="nenhum_municipio_selecionado">Selecione um município</string>
     <string name="iniciar_linha">Inicie uma linha</string>
+    <string name="linha_iniciada">A linha %1$s foi iniciada com sucesso.</string>
 
     <string name="google_maps_key">AIzaSyBTJIM-_P4CdRqBYAx08yzJMkW20yt8RVI</string>
 </resources>

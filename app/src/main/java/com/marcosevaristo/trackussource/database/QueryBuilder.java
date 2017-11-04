@@ -183,9 +183,9 @@ public class QueryBuilder {
             db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{linhaAtualOld.getIdSql().toString()});
         }
 
-        alteraLinhaAtualFirebase(novaLinha, carroId);
-
         App.setLinhaAtual(linhaAtualAux);
+
+        alteraLinhaAtualFirebase(novaLinha, carroId);
 
         db.setTransactionSuccessful();
         db.endTransaction();
