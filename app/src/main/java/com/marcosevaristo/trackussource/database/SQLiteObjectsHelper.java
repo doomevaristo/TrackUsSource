@@ -9,7 +9,7 @@ public class SQLiteObjectsHelper {
         public static final String COLUMN_NUMERO = "LIN_NUMERO";
         public static final String COLUMN_TITULO = "LIN_TITULO";
         public static final String COLUMN_SUBTITULO = "LIN_SUBTITULO";
-        public static final String COLUMN_CIDADE = "LIN_MUNID";
+        public static final String COLUMN_MUNICIPIO = "LIN_MUNID";
 
         private static TLinhas instance;
 
@@ -28,9 +28,9 @@ public class SQLiteObjectsHelper {
             sb.append(",").append(COLUMN_NUMERO).append(" VARCHAR(25) NOT NULL ");
             sb.append(",").append(COLUMN_TITULO).append(" VARCHAR(255) NOT NULL ");
             sb.append(",").append(COLUMN_SUBTITULO).append(" VARCHAR(600) NULL ");
-            sb.append(",").append(COLUMN_CIDADE).append(" INTEGER NULL ");
-            sb.append(", FOREIGN KEY (").append(COLUMN_CIDADE).append(") REFERENCES ").append(TMunicipioAtual.TABLE_NAME).append("(")
-                    .append(TLinhas._ID).append(") ON DELETE CASCADE");
+            sb.append(",").append(COLUMN_MUNICIPIO).append(" INTEGER NULL ");
+            sb.append(", FOREIGN KEY (").append(COLUMN_MUNICIPIO).append(") REFERENCES ").append(TMunicipios.TABLE_NAME).append("(")
+                    .append(TMunicipios._ID).append(") ON DELETE CASCADE");
             sb.append(");");
             return sb.toString();
         }
@@ -39,7 +39,7 @@ public class SQLiteObjectsHelper {
         public String getColunasParaSelect() {
             StringBuilder sb = new StringBuilder();
             sb.append("LIN.").append(_ID).append(", ").append(COLUMN_NUMERO).append(", ")
-                    .append(COLUMN_TITULO).append(", ").append(COLUMN_SUBTITULO).append(", ").append(COLUMN_CIDADE);
+                    .append(COLUMN_TITULO).append(", ").append(COLUMN_SUBTITULO).append(", ").append(COLUMN_MUNICIPIO);
             return sb.toString();
         }
     }
@@ -136,7 +136,7 @@ public class SQLiteObjectsHelper {
             sb.append(" (").append(_ID).append(" INTEGER NOT NULL PRIMARY KEY ");
             sb.append(", ").append(COLUMN_MUNICIPIOID).append(" INTEGER NOT NULL ");
             sb.append(", FOREIGN KEY (").append(COLUMN_MUNICIPIOID).append(") REFERENCES ").append(TMunicipios.TABLE_NAME).append("(")
-                    .append(TLinhas._ID).append(") ON DELETE CASCADE");
+                    .append(TMunicipios._ID).append(") ON DELETE CASCADE");
             sb.append(");");
             return sb.toString();
         }
