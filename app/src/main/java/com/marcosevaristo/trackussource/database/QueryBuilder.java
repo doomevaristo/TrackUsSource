@@ -248,7 +248,7 @@ public class QueryBuilder {
         values.put(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID, novoMunicipio.getId());
         if(municipioAtualOld == null) {
             db.beginTransaction();
-            novoMunicipio.setId(db.insert(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, null, values));
+            db.insert(SQLiteObjectsHelper.TMunicipioAtual.TABLE_NAME, null, values);
         } else {
             StringBuilder whereClause = new StringBuilder();
             whereClause.append(SQLiteObjectsHelper.TMunicipioAtual.COLUMN_MUNICIPIOID).append(" = ?");

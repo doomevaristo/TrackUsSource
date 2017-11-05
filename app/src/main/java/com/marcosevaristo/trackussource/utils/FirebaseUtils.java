@@ -36,10 +36,8 @@ public class FirebaseUtils {
     }
 
     private static void startReferenceLinhas() {
-        if(databaseReferenceLinhas == null) {
-            databaseReferenceLinhas = getDatabase().getReference().child(NODE_MUNICIPIOS)
-                    .child(App.getMunicipio().getId().toString()).child(NODE_LINHAS);
-        }
+        databaseReferenceLinhas = getDatabase().getReference().child(NODE_MUNICIPIOS)
+                .child(App.getMunicipio().getId().toString()).child(NODE_LINHAS);
     }
 
     public static FirebaseDatabase getDatabase() {

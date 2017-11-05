@@ -168,17 +168,19 @@ public class ControleDeLinha extends AppCompatActivity {
         botaoIniciarLinha.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
-                if(linhaSelecionada != null) {
-                    QueryBuilder.atualizaLinhaAtual(linhaSelecionada, App.getCarroId());
-                    if(App.getLinhaAtual() != null) {
-                        CarroLocationListener.start();
+                if(listViewLinhas != null && listViewLinhas.getAdapter() != null) {
+                    Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
+                    if(linhaSelecionada != null) {
+                        QueryBuilder.atualizaLinhaAtual(linhaSelecionada, App.getCarroId());
+                        if(App.getLinhaAtual() != null) {
+                            CarroLocationListener.start();
+                        }
+                        setupStatusLinhaIcon();
+                        emiteMensagemLinhaIniciada();
+                        minimizar();
+                    } else {
+                        Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
                     }
-                    setupStatusLinhaIcon();
-                    emiteMensagemLinhaIniciada();
-                    minimizar();
-                } else {
-                    Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
                 }
             }
         });
