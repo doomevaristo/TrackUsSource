@@ -11,7 +11,6 @@ public class Linha implements Serializable {
     private String numero;
     private String titulo;
     private String subtitulo;
-    private List<Carro> lCarros;
     private boolean ehLinhaAtual = false;
     private boolean selecionada = false;
 
@@ -20,8 +19,7 @@ public class Linha implements Serializable {
     public Linha() {
     }
 
-    public Linha(List<Carro> lCarros, String numero, String titulo, String subtitulo) {
-        this.lCarros = lCarros;
+    public Linha(String numero, String titulo, String subtitulo) {
         this.numero = numero;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -59,34 +57,28 @@ public class Linha implements Serializable {
         this.idSql = idSql;
     }
 
-    public List<Carro> getlCarros() {
-        return lCarros;
-    }
-
-    public static List<Linha> converteMapParaListaLinhas(Map lMapLinhas) {
+    public static List<Linha> converteMapParaListaLinhas(List<Map<String, Object>> lMapLinhas) {
         List<Linha> lLinhas = new ArrayList<>();
         String numeroAux = null;
         String tituloAux = null;
         String subTituloAux = null;
-        for(Object umaLinhaIdObj : lMapLinhas.keySet()) {
-            Map<Object, Object> mapUmaLinha = (Map<Object, Object>) lMapLinhas.get(umaLinhaIdObj);
-            for(Object umaKeyAux : mapUmaLinha.keySet()) {
-                String umaKey = umaKeyAux.toString();
+        for(Map<String, Object> umaLinhaMap : lMapLinhas) {
+            for(String umaKey : umaLinhaMap.keySet()) {
                 switch(umaKey) {
                     case "numero":
-                        numeroAux = mapUmaLinha.get(umaKeyAux).toString();
+                        numeroAux = umaLinhaMap.get(umaKey).toString();
                         break;
                     case "titulo":
-                        tituloAux = mapUmaLinha.get(umaKeyAux).toString();
+                        tituloAux = umaLinhaMap.get(umaKey).toString();
                         break;
                     case "subtitulo":
-                        subTituloAux = mapUmaLinha.get(umaKeyAux).toString();
+                        subTituloAux = umaLinhaMap.get(umaKey).toString();
                         break;
                     default:
                         break;
                 }
             }
-            lLinhas.add(new Linha(null, numeroAux, tituloAux, subTituloAux));
+            lLinhas.add(new Linha(numeroAux, tituloAux, subTituloAux));
         }
         return lLinhas;
     }

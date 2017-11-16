@@ -116,10 +116,10 @@ public class ControleDeLinha extends AppCompatActivity {
             ValueEventListener evento = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    Map mapValues = (Map) dataSnapshot.getValue();
-                    if (mapValues != null) {
+                    List listValues = (List) dataSnapshot.getValue();
+                    if (CollectionUtils.isNotEmpty(listValues)) {
                         lLinhas = new ListaLinhasDTO();
-                        List<Linha> lLinhasAux = Linha.converteMapParaListaLinhas(mapValues);
+                        List<Linha> lLinhasAux = Linha.converteMapParaListaLinhas(listValues);
                         QueryBuilder.insereLinhas(lLinhasAux);
                         for(Linha umaLinha : lLinhasAux) {
                             if(App.getLinhaAtual() == null) break;

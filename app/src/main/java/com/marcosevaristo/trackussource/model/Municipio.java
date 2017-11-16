@@ -72,7 +72,6 @@ public class Municipio {
         List<Municipio> lMunicipios = new ArrayList<>();
         Long idAux = null;
         String nomeAux = null;
-        List<Linha> listLinhas = null;
         Municipio municipioAux;
 
         for(Map<String, Object> umMunicipio : mapValues) {
@@ -85,8 +84,6 @@ public class Municipio {
                         case "nome":
                             nomeAux = umMunicipio.get(umAtributoMun).toString();
                             break;
-                        case "linhas":
-                            listLinhas = Linha.converteMapParaListaLinhas((Map)umMunicipio.get(umAtributoMun));
                         default:
                             break;
                     }
@@ -94,7 +91,6 @@ public class Municipio {
                 municipioAux = new Municipio();
                 municipioAux.setId(idAux);
                 municipioAux.setNome(nomeAux);
-                municipioAux.setlLinhas(listLinhas);
                 lMunicipios.add(municipioAux);
             }
         }
