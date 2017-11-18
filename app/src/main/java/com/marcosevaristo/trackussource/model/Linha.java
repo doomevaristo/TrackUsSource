@@ -1,12 +1,10 @@
 package com.marcosevaristo.trackussource.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class Linha implements Serializable {
     private Long idSql;
+    private String id;
     private Municipio municipio;
     private String numero;
     private String titulo;
@@ -57,32 +55,6 @@ public class Linha implements Serializable {
         this.idSql = idSql;
     }
 
-    public static List<Linha> converteMapParaListaLinhas(List<Map<String, Object>> lMapLinhas) {
-        List<Linha> lLinhas = new ArrayList<>();
-        String numeroAux = null;
-        String tituloAux = null;
-        String subTituloAux = null;
-        for(Map<String, Object> umaLinhaMap : lMapLinhas) {
-            for(String umaKey : umaLinhaMap.keySet()) {
-                switch(umaKey) {
-                    case "numero":
-                        numeroAux = umaLinhaMap.get(umaKey).toString();
-                        break;
-                    case "titulo":
-                        tituloAux = umaLinhaMap.get(umaKey).toString();
-                        break;
-                    case "subtitulo":
-                        subTituloAux = umaLinhaMap.get(umaKey).toString();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            lLinhas.add(new Linha(numeroAux, tituloAux, subTituloAux));
-        }
-        return lLinhas;
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -126,5 +98,13 @@ public class Linha implements Serializable {
 
     public void setSelecionada(boolean selecionada) {
         this.selecionada = selecionada;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

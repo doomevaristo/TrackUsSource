@@ -1,8 +1,8 @@
 package com.marcosevaristo.trackussource.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,17 +19,16 @@ import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.MunicipiosAdapter;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
-import com.marcosevaristo.trackussource.dto.ListaMunicipiosDTO;
 import com.marcosevaristo.trackussource.model.Municipio;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class SelecionaMunicipio extends AppCompatActivity {
 
-    private ListaMunicipiosDTO lMunicipios;
+    private List<Municipio> lMunicipios;
     private ListView listViewMunicipios;
     private ArrayAdapter adapter;
 
@@ -47,34 +46,38 @@ public class SelecionaMunicipio extends AppCompatActivity {
         listViewMunicipios.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for(Municipio umMunicipio : lMunicipios.getlMunicipios()) {
-                    umMunicipio.setSelecionado(lMunicipios.getlMunicipios().indexOf(umMunicipio) == position);
+                for(Municipio umMunicipio : lMunicipios) {
+                    umMunicipio.setSelecionado(lMunicipios.indexOf(umMunicipio) == position);
                 }
                 ((MunicipiosAdapter)listViewMunicipios.getAdapter()).selectItem(position);
                 ((ListView) parent).invalidateViews();
             }
         });
-        lMunicipios = new ListaMunicipiosDTO();
-        lMunicipios.addMunicipios(QueryBuilder.getMunicipios(null));
+        lMunicipios = new ArrayList<>();
+        lMunicipios.addAll(QueryBuilder.getMunicipios(null));
 
-        if(CollectionUtils.isEmpty(lMunicipios.getlMunicipios())) {
-            Query queryRef = FirebaseUtils.getMunicipiosReference().orderByKey().getRef();
+        if(CollectionUtils.isEmpty(lMunicipios)) {
+            Query queryRef = FirebaseUtils.getMunicipiosReference(null).orderByKey().getRef();
             ValueEventListener evento = new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    List<Map<String, Object>> mapValues = (List<Map<String, Object>>) dataSnapshot.getValue();
-                    if (mapValues != null) {
-                        lMunicipios = new ListaMunicipiosDTO();
-                        List<Municipio> lMunicipiosAux = Municipio.converteListMapParaListaMunicipios(mapValues);
-                        QueryBuilder.insereMunicipios(lMunicipiosAux);
-                        for(Municipio umMunicipio : lMunicipiosAux) {
-                            if(App.getMunicipio() == null) break;
-                            umMunicipio.setEhMunicipioAtual(App.getMunicipio().getId().equals(umMunicipio.getId()));
+                    if(dataSnapshot != null && dataSnapshot.getChildren() != null) {
+                        lMunicipios = new ArrayList<>();
+                        for(DataSnapshot umDataSnapshot : dataSnapshot.getChildren()) {
+                            lMunicipios.add(umDataSnapshot.getValue(Municipio.class));
+                            QueryBuilder.insereMunicipios(lMunicipios);
+                            if(App.getMunicipio() != null) {
+                                for(Municipio umMunicipio : lMunicipios) {
+                                    if(App.getMunicipio().getId().equals(umMunicipio.getId())) {
+                                        umMunicipio.setEhMunicipioAtual(true);
+                                        break;
+                                    }
+                                }
+                            }
+                            adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios);
+                            adapter.notifyDataSetChanged();
+                            listViewMunicipios.setAdapter(adapter);
                         }
-                        lMunicipios.addMunicipios(lMunicipiosAux);
-                        adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios.getlMunicipios());
-                        adapter.notifyDataSetChanged();
-                        listViewMunicipios.setAdapter(adapter);
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
@@ -86,7 +89,7 @@ public class SelecionaMunicipio extends AppCompatActivity {
             };
             queryRef.addListenerForSingleValueEvent(evento);
         } else {
-            adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios.getlMunicipios());
+            adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios);
             listViewMunicipios.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
@@ -94,10 +97,10 @@ public class SelecionaMunicipio extends AppCompatActivity {
     }
 
     private void setaSelecao() {
-        if(lMunicipios != null && CollectionUtils.isNotEmpty(lMunicipios.getlMunicipios())) {
-            for(Municipio umMinicipio : lMunicipios.getlMunicipios()) {
+        if(lMunicipios != null && CollectionUtils.isNotEmpty(lMunicipios)) {
+            for(Municipio umMinicipio : lMunicipios) {
                 if(umMinicipio.isSelecionado()) {
-                    listViewMunicipios.setSelection(lMunicipios.getlMunicipios().indexOf(umMinicipio));
+                    listViewMunicipios.setSelection(lMunicipios.indexOf(umMinicipio));
                 }
             }
         }

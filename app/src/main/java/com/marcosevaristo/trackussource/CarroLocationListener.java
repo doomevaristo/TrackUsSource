@@ -1,6 +1,5 @@
 package com.marcosevaristo.trackussource;
 
-import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -34,7 +33,7 @@ public class CarroLocationListener implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         if(location != null) {
-            Query queryRefSourceSender = FirebaseUtils.getCarroReference();
+            Query queryRefSourceSender = FirebaseUtils.getCarroReference(App.getLinhaAtual().getId(), App.getCarroId());
             carro.setLatitude(String.valueOf(location.getLatitude()));
             carro.setLongitude(String.valueOf(location.getLongitude()));
             carro.setLocation(getEndereco(location));

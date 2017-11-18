@@ -1,16 +1,11 @@
 package com.marcosevaristo.trackussource.activities;
 
-import android.*;
-import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -22,20 +17,18 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.marcosevaristo.trackussource.*;
+import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
-import com.marcosevaristo.trackussource.dto.ListaLinhasDTO;
-import com.marcosevaristo.trackussource.model.Carro;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ControleDeLinha extends AppCompatActivity {
 
@@ -43,7 +36,7 @@ public class ControleDeLinha extends AppCompatActivity {
     private ListView listViewLinhas;
 
     private ArrayAdapter adapter;
-    private ListaLinhasDTO lLinhas;
+    private List<Linha> lLinhas;
 
     private final String[] PERMISSOES_NECESSARIAS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION};
@@ -79,8 +72,6 @@ public class ControleDeLinha extends AppCompatActivity {
             }
         }
 
-        FirebaseUtils.startReferences();
-
         setupListViewLinhas();
         setupBotaoIniciarLinha();
     }
@@ -101,66 +92,73 @@ public class ControleDeLinha extends AppCompatActivity {
         listViewLinhas.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                for(Linha umaLinha : lLinhas.getlLinhas()) {
-                    umaLinha.setSelecionada(lLinhas.getlLinhas().indexOf(umaLinha) == position);
+                for(Linha umaLinha : lLinhas) {
+                    umaLinha.setSelecionada(lLinhas.indexOf(umaLinha) == position);
                 }
                 ((LinhasAdapter)listViewLinhas.getAdapter()).selectItem(position);
                 ((ListView) parent).invalidateViews();
             }
         });
-        lLinhas = new ListaLinhasDTO();
-        lLinhas.addLinhas(QueryBuilder.getLinhas(null));
+        lLinhas = new ArrayList<>();
+        lLinhas.addAll(QueryBuilder.getLinhas(null));
 
-        if(CollectionUtils.isEmpty(lLinhas.getlLinhas())) {
-            Query queryRef = FirebaseUtils.getLinhasReference().orderByKey().getRef();
-            ValueEventListener evento = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    List listValues = (List) dataSnapshot.getValue();
-                    if (CollectionUtils.isNotEmpty(listValues)) {
-                        lLinhas = new ListaLinhasDTO();
-                        List<Linha> lLinhasAux = Linha.converteMapParaListaLinhas(listValues);
-                        QueryBuilder.insereLinhas(lLinhasAux);
-                        for(Linha umaLinha : lLinhasAux) {
-                            if(App.getLinhaAtual() == null) break;
-                            umaLinha.setEhLinhaAtual(App.getLinhaAtual().getIdSql().equals(umaLinha.getIdSql()));
-                        }
-                        lLinhas.addLinhas(lLinhasAux);
-                        adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
-                        adapter.notifyDataSetChanged();
-                        listViewLinhas.setAdapter(adapter);
-                    } else {
-                        Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
-                    }
-                    progressBar.setVisibility(View.GONE);
-                    if(lLinhas != null && CollectionUtils.isNotEmpty(lLinhas.getlLinhas())) {
-                        for(Linha umaLinha : lLinhas.getlLinhas()) {
-                            if(umaLinha.isSelecionada()) {
-                                listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    progressBar.setVisibility(View.GONE);
-                }
-            };
-            queryRef.addListenerForSingleValueEvent(evento);
+        if(CollectionUtils.isEmpty(lLinhas)) {
+            FirebaseUtils.getLinhasReference(null).orderByChild("numero").addListenerForSingleValueEvent(getEventBuscaLinhasFirebase());
         } else {
-            adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas.getlLinhas());
+            adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
             listViewLinhas.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
         }
-        if(lLinhas != null && CollectionUtils.isNotEmpty(lLinhas.getlLinhas())) {
-            for(Linha umaLinha : lLinhas.getlLinhas()) {
+        if(CollectionUtils.isNotEmpty(lLinhas)) {
+            for(Linha umaLinha : lLinhas) {
                 if(umaLinha.isSelecionada()) {
-                    listViewLinhas.setSelection(lLinhas.getlLinhas().indexOf(umaLinha));
+                    listViewLinhas.setSelection(lLinhas.indexOf(umaLinha));
                 }
             }
         }
+    }
+
+    private ValueEventListener getEventBuscaLinhasFirebase() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null && dataSnapshot.getChildren() != null) {
+                    lLinhas = new ArrayList<>();
+                    for(DataSnapshot umDatasnapshot : dataSnapshot.getChildren()) {
+                        Linha umaLinha = umDatasnapshot.getValue(Linha.class);
+                        lLinhas.add(umaLinha);
+                    }
+                    QueryBuilder.insereLinhas(lLinhas);
+                    if(App.getLinhaAtual() != null) {
+                        for(Linha umaLinha : lLinhas) {
+                            if(App.getLinhaAtual().getId().equals(umaLinha.getId())) {
+                                umaLinha.setEhLinhaAtual(true);
+                                break;
+                            }
+                        }
+                    }
+                    adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
+                    adapter.notifyDataSetChanged();
+                    listViewLinhas.setAdapter(adapter);
+                } else {
+                    Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
+                }
+                progressBar.setVisibility(View.GONE);
+                if(CollectionUtils.isNotEmpty(lLinhas)) {
+                    for(Linha umaLinha : lLinhas) {
+                        if(umaLinha.isSelecionada()) {
+                            listViewLinhas.setSelection(lLinhas.indexOf(umaLinha));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                progressBar.setVisibility(View.GONE);
+            }
+        };
     }
 
     private void setupBotaoIniciarLinha() {
@@ -171,7 +169,7 @@ public class ControleDeLinha extends AppCompatActivity {
                 if(listViewLinhas != null && listViewLinhas.getAdapter() != null) {
                     Linha linhaSelecionada = ((LinhasAdapter)listViewLinhas.getAdapter()).getLinhaSelecionada();
                     if(linhaSelecionada != null) {
-                        QueryBuilder.atualizaLinhaAtual(linhaSelecionada, App.getCarroId());
+                        QueryBuilder.atualizaLinhaAtual(linhaSelecionada);
                         if(App.getLinhaAtual() != null) {
                             CarroLocationListener.start();
                         }
