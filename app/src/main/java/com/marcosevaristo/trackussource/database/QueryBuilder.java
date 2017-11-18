@@ -12,6 +12,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.model.Municipio;
+import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 import com.marcosevaristo.trackussource.utils.StringUtils;
 
@@ -156,12 +157,23 @@ public class QueryBuilder {
 
     public static void insereLinhas(List<Linha> lLinhas) {
         SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
+        List<Linha> linhasGravadas = getLinhas(null);
+        Map<String, Linha> mLinhasAux = null;
+        if (CollectionUtils.isNotEmpty(linhasGravadas)) {
+            mLinhasAux = new HashMap<>();
+            for (Linha umaLinhaGravada : linhasGravadas) {
+                mLinhasAux.put(umaLinhaGravada.getNumero() + "|" + umaLinhaGravada.getMunicipio().getIdSql(), umaLinhaGravada);
+            }
+        }
 
         ContentValues values = new ContentValues();
         db.beginTransaction();
         for (Linha umaLinha : lLinhas) {
-            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_IDFIREBASE, umaLinha.getId());
+            if (mLinhasAux != null && mLinhasAux.get(umaLinha.getNumero() + "|" + umaLinha.getMunicipio().getIdSql()) != null) {
+                continue;
+            }
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_NUMERO, umaLinha.getNumero());
+            values.put(SQLiteObjectsHelper.TLinhas.COLUMN_IDFIREBASE, umaLinha.getId());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_TITULO, umaLinha.getTitulo());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_SUBTITULO, umaLinha.getSubtitulo());
             values.put(SQLiteObjectsHelper.TLinhas.COLUMN_MUNICIPIO, App.getMunicipio().getIdSql());
@@ -268,10 +280,22 @@ public class QueryBuilder {
 
     public static void insereMunicipios(List<Municipio> lMunicipiosAux) {
         SQLiteDatabase db = sqLiteHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
+
+        List<Municipio> municipiosGravados = getMunicipios(null);
+        Map<String, Municipio> mMunicipiosAux = null;
+        if(CollectionUtils.isNotEmpty(municipiosGravados)) {
+            mMunicipiosAux = new HashMap<>();
+            for(Municipio umMunicipioGravado : municipiosGravados) {
+                mMunicipiosAux.put(umMunicipioGravado.getIdSql()+"|"+umMunicipioGravado.getNome(), umMunicipioGravado);
+            }
+        }
+
         db.beginTransaction();
         for (Municipio umMunicipio : lMunicipiosAux) {
+            if(mMunicipiosAux != null && mMunicipiosAux.get(umMunicipio.getIdSql()+"|"+umMunicipio.getNome()) != null) {
+                continue;
+            }
             values.put(SQLiteObjectsHelper.TMunicipios._ID, umMunicipio.getIdSql());
             values.put(SQLiteObjectsHelper.TMunicipios.COLUMN_IDFIREBASE, umMunicipio.getId());
             values.put(SQLiteObjectsHelper.TMunicipios.COLUMN_MUNNOME, umMunicipio.getNome());
