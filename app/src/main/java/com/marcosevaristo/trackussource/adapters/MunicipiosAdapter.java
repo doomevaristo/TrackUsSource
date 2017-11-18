@@ -64,7 +64,7 @@ public class MunicipiosAdapter extends ArrayAdapter<Municipio> {
         if(municipio != null) {
             municipioHolder.texto.setText(municipio.toString());
 
-            if((Integer.valueOf(position) == posicaoSelecionada) || (posicaoSelecionada == -1 && municipio.isEhMunicipioAtual())) {
+            if((position == posicaoSelecionada) || (posicaoSelecionada == -1 && municipio.isEhMunicipioAtual())) {
                 view.setBackgroundColor(App.getAppContext().getResources().getColor(R.color.selectedItem));
             } else {
                 view.setBackgroundColor(Color.TRANSPARENT);

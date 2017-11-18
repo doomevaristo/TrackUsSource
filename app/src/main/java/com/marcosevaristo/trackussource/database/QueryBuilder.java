@@ -178,28 +178,27 @@ public class QueryBuilder {
         Linha linhaAtualOld = getLinhaAtual();
         ContentValues values = new ContentValues();
         values.put(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID, linhaAtualAux.getIdSql());
+        db.beginTransaction();
         if(linhaAtualOld == null) {
-            db.beginTransaction();
-            linhaAtualAux.setIdSql(db.insert(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, null, values));
+            db.insert(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, null, values);
         } else {
             StringBuilder whereClause = new StringBuilder();
             whereClause.append(SQLiteObjectsHelper.TLinhaAtual.COLUMN_LINHAID).append(" = ?");
-            db.beginTransaction();
             db.update(SQLiteObjectsHelper.TLinhaAtual.TABLE_NAME, values, whereClause.toString(), new String[]{linhaAtualOld.getIdSql().toString()});
         }
-
-        App.setLinhaAtual(linhaAtualAux);
-
         alteraLinhaAtualFirebase(novaLinha);
+        App.setLinhaAtual(linhaAtualAux);
 
         db.setTransactionSuccessful();
         db.endTransaction();
     }
 
-    private static void alteraLinhaAtualFirebase(final Linha novaLinha) {
-        queryRefLinhaAtualOld = FirebaseUtils.getCarroReference(App.getLinhaAtual().getId(), App.getCarroId());
-        queryRefNovaLinha = FirebaseUtils.getCarroReference(novaLinha.getId(), App.getCarroId());
+    private static void alteraLinhaAtualFirebase(Linha novaLinha) {
+        if(App.getLinhaAtual() != null) {
+            queryRefLinhaAtualOld = FirebaseUtils.getCarroReference(App.getLinhaAtual().getId(), App.getCarroId());
+        }
 
+        queryRefNovaLinha = FirebaseUtils.getCarroReference(novaLinha.getId(), App.getCarroId());
         if(queryRefLinhaAtualOld != null) { //Alterou linha
             queryRefLinhaAtualOld.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override

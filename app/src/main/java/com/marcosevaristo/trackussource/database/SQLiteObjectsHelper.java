@@ -40,7 +40,7 @@ public class SQLiteObjectsHelper {
         @Override
         public String getColunasParaSelect() {
             StringBuilder sb = new StringBuilder();
-            sb.append("LIN.").append(_ID).append(", ").append(COLUMN_NUMERO).append(", ").append(COLUMN_IDFIREBASE).append(", ")
+            sb.append("LIN.").append(_ID).append(", ").append(COLUMN_IDFIREBASE).append(", ").append(COLUMN_NUMERO).append(", ")
                     .append(COLUMN_TITULO).append(", ").append(COLUMN_SUBTITULO).append(", ").append(COLUMN_MUNICIPIO);
             return sb.toString();
         }

@@ -65,19 +65,19 @@ public class SelecionaMunicipio extends AppCompatActivity {
                         lMunicipios = new ArrayList<>();
                         for(DataSnapshot umDataSnapshot : dataSnapshot.getChildren()) {
                             lMunicipios.add(umDataSnapshot.getValue(Municipio.class));
-                            QueryBuilder.insereMunicipios(lMunicipios);
-                            if(App.getMunicipio() != null) {
-                                for(Municipio umMunicipio : lMunicipios) {
-                                    if(App.getMunicipio().getId().equals(umMunicipio.getId())) {
-                                        umMunicipio.setEhMunicipioAtual(true);
-                                        break;
-                                    }
+                        }
+                        QueryBuilder.insereMunicipios(lMunicipios);
+                        if(App.getMunicipio() != null) {
+                            for(Municipio umMunicipio : lMunicipios) {
+                                if(App.getMunicipio().getId().equals(umMunicipio.getId())) {
+                                    umMunicipio.setEhMunicipioAtual(true);
+                                    break;
                                 }
                             }
-                            adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios);
-                            adapter.notifyDataSetChanged();
-                            listViewMunicipios.setAdapter(adapter);
                         }
+                        adapter = new MunicipiosAdapter(App.getAppContext(), R.layout.item_da_lista_municipios, lMunicipios);
+                        adapter.notifyDataSetChanged();
+                        listViewMunicipios.setAdapter(adapter);
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
                     }
