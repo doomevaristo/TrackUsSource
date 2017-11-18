@@ -126,8 +126,7 @@ public class ControleDeLinha extends AppCompatActivity {
                 if(dataSnapshot != null && dataSnapshot.getChildren() != null) {
                     lLinhas = new ArrayList<>();
                     for(DataSnapshot umDatasnapshot : dataSnapshot.getChildren()) {
-                        Linha umaLinha = umDatasnapshot.getValue(Linha.class);
-                        lLinhas.add(umaLinha);
+                        lLinhas.add(umDatasnapshot.getValue(Linha.class));
                     }
                     QueryBuilder.insereLinhas(lLinhas);
                     if(App.getLinhaAtual() != null) {
