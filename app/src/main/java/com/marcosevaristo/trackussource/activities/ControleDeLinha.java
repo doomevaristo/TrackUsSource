@@ -1,11 +1,13 @@
 package com.marcosevaristo.trackussource.activities;
 
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -15,6 +17,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -63,14 +74,15 @@ public class ControleDeLinha extends AppCompatActivity {
         App.setLinhaAtual(QueryBuilder.getLinhaAtual());
         setupStatusLinhaIcon();
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        while (!possuiPermissoesNecessarias()) {
+        /*while (!possuiPermissoesNecessarias()) {
             ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
+        solicitaLocalizacao();
 
         setupListViewLinhas();
         setupBotaoIniciarLinha();
@@ -197,5 +209,44 @@ public class ControleDeLinha extends AppCompatActivity {
             if(!possuiPermissoes) break;
         }
         return possuiPermissoes;
+    }
+
+    private void solicitaLocalizacao() {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(App.getAppContext())
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
+
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.i(App.getAppContext().getString(R.string.title_controle_de_linha), App.getAppContext().getString(R.string.permissoes_de_localizacao_ja_concedidas));
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.i(App.getAppContext().getString(R.string.title_controle_de_linha), App.getAppContext().getString(R.string.solicitando_permissoes));
+
+                        try {
+                            status.startResolutionForResult(ControleDeLinha.this, 0x1);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i(App.getAppContext().getString(R.string.title_controle_de_linha), App.getAppContext().getString(R.string.aguardando_permissao_localizacao));
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.i(App.getAppContext().getString(R.string.title_controle_de_linha), App.getAppContext().getString(R.string.permissoes_de_localizacao_inadequadas));
+                        break;
+                }
+            }
+        });
     }
 }

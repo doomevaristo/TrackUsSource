@@ -11,4 +11,9 @@
     <string name="linha_iniciada">A linha %1$s foi iniciada com sucesso.</string>
 
     <string name="google_maps_key">AIzaSyBTJIM-_P4CdRqBYAx08yzJMkW20yt8RVI</string>
+    <string name="title_controle_de_linha">Controle de linha</string>
+    <string name="permissoes_de_localizacao_ja_concedidas">As permissões necessárias de localização já estão concedidas.</string>
+    <string name="solicitando_permissoes">Solicitando permissões ao usuário</string>
+    <string name="aguardando_permissao_localizacao">Aguardando permissão de localização.</string>
+    <string name="permissoes_de_localizacao_inadequadas">As permissões necessárias são inadequadas, não será criado um dialog aqui.</string>
 </resources>
