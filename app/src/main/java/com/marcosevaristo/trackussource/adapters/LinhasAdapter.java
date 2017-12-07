@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.R;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.StringUtils;
 

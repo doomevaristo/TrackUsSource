@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,11 +28,11 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.marcosevaristo.trackussource.App;
-import com.marcosevaristo.trackussource.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
+import com.marcosevaristo.trackussource.listeners.CarroLocationListener;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
@@ -74,16 +73,7 @@ public class ControleDeLinha extends AppCompatActivity {
         App.setLinhaAtual(QueryBuilder.getLinhaAtual());
         setupStatusLinhaIcon();
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        /*while (!possuiPermissoesNecessarias()) {
-            ActivityCompat.requestPermissions(this, PERMISSOES_NECESSARIAS, INT_REQUISICAO_PERMISSOES);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
         solicitaLocalizacao();
-
         setupListViewLinhas();
         setupBotaoIniciarLinha();
     }

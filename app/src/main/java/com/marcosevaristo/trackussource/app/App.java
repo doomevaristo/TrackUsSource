@@ -1,4 +1,4 @@
-package com.marcosevaristo.trackussource;
+package com.marcosevaristo.trackussource.app;
 
 import android.app.Application;
 import android.content.Context;

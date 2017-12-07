@@ -2,7 +2,7 @@ package com.marcosevaristo.trackussource.utils;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.app.App;
 
 public class FirebaseUtils {
 
