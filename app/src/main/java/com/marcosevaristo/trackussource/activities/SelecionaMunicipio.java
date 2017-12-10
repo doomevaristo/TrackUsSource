@@ -79,7 +79,7 @@ public class SelecionaMunicipio extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                         listViewMunicipios.setAdapter(adapter);
                     } else {
-                        Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
+                        App.toast(R.string.nenhum_resultado);
                     }
                     setaSelecao();
                 }
@@ -116,11 +116,11 @@ public class SelecionaMunicipio extends AppCompatActivity {
                     QueryBuilder.atualizaMunicipioAtual(municipioSelecionado);
                     if(App.getMunicipio() != null) {
                         CarroLocationListener.stop();
-                        Toast.makeText(App.getAppContext(), R.string.iniciar_linha, Toast.LENGTH_LONG).show();
+                        App.toast(R.string.iniciar_linha);
                         startActivity(new Intent(App.getAppContext(), ControleDeLinha.class));
                     }
                 } else {
-                    Toast.makeText(App.getAppContext(), R.string.nenhum_municipio_selecionado, Toast.LENGTH_LONG).show();
+                    App.toast(R.string.nenhum_municipio_selecionado);
                 }
             }
         });

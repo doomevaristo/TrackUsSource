@@ -2,9 +2,7 @@ package com.marcosevaristo.trackussource.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -51,8 +48,6 @@ public class ControleDeLinha extends AppCompatActivity {
     private final String[] PERMISSOES_NECESSARIAS = {android.Manifest.permission.READ_PHONE_STATE, android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION};
 
-    private final int INT_REQUISICAO_PERMISSOES = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +61,7 @@ public class ControleDeLinha extends AppCompatActivity {
     }
 
     private void emiteMensagemLinhaIniciada() {
-        Toast.makeText(App.getAppContext(), App.getAppContext().getString(R.string.linha_iniciada, App.getLinhaAtual().getNumero()), Toast.LENGTH_LONG).show();
+        App.toast(R.string.linha_iniciada, App.getLinhaAtual().getNumero());
     }
 
     private void setupTelaInicial() {
@@ -143,7 +138,7 @@ public class ControleDeLinha extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                     listViewLinhas.setAdapter(adapter);
                 } else {
-                    Toast.makeText(App.getAppContext(), R.string.nenhum_resultado, Toast.LENGTH_LONG).show();
+                    App.toast(R.string.nenhum_resultado);
                 }
                 progressBar.setVisibility(View.GONE);
                 if(CollectionUtils.isNotEmpty(lLinhas)) {
@@ -178,7 +173,7 @@ public class ControleDeLinha extends AppCompatActivity {
                         emiteMensagemLinhaIniciada();
                         minimizar();
                     } else {
-                        Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
+                        App.toast(R.string.nenhuma_linha_selecionada);
                     }
                 }
             }
@@ -190,15 +185,6 @@ public class ControleDeLinha extends AppCompatActivity {
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(startMain);
-    }
-
-    private boolean possuiPermissoesNecessarias() {
-        boolean possuiPermissoes = true;
-        for(String umaPermissao : PERMISSOES_NECESSARIAS) {
-            possuiPermissoes = possuiPermissoes && ContextCompat.checkSelfPermission(this, umaPermissao) == PackageManager.PERMISSION_GRANTED;
-            if(!possuiPermissoes) break;
-        }
-        return possuiPermissoes;
     }
 
     private void solicitaLocalizacao() {
