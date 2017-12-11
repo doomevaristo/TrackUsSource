@@ -102,7 +102,7 @@ public class ControleDeLinha extends AppCompatActivity {
         if(CollectionUtils.isEmpty(lLinhas)) {
             FirebaseUtils.getLinhasReference(null).orderByChild("numero").addListenerForSingleValueEvent(getEventBuscaLinhasFirebase());
         } else {
-            adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
+            adapter = new LinhasAdapter(R.layout.item_da_lista_linhas, lLinhas);
             listViewLinhas.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
@@ -134,7 +134,7 @@ public class ControleDeLinha extends AppCompatActivity {
                             }
                         }
                     }
-                    adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
+                    adapter = new LinhasAdapter(R.layout.item_da_lista_linhas, lLinhas);
                     adapter.notifyDataSetChanged();
                     listViewLinhas.setAdapter(adapter);
                 } else {

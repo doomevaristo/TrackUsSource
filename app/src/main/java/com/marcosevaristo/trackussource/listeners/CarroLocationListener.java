@@ -1,6 +1,7 @@
 package com.marcosevaristo.trackussource.listeners;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -23,11 +24,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class CarroLocationListener extends Service implements LocationListener {
+public class CarroLocationListener implements LocationListener {
 
     private Carro carro;
-    private static final Long INTERVALO_UPDATE_LOCAL_EM_MILIS = 5000L;
-    private static final Float DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS = 10.0f;
+    private static final long INTERVALO_UPDATE_LOCAL_EM_MILIS = 5000L;
+    private static final float DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS = 10.0f;
     private static LocationManager locationManager;
     private static CarroLocationListener listenerInstance;
 
@@ -88,7 +89,7 @@ public class CarroLocationListener extends Service implements LocationListener {
 
     public static void start() {
         listenerInstance = new CarroLocationListener(new Carro(App.getCarroId()));
-        locationManager = (LocationManager) App.getAppContext().getSystemService(App.getAppContext().LOCATION_SERVICE);
+        locationManager = (LocationManager) App.getAppContext().getSystemService(Context.LOCATION_SERVICE);
         locationManager.getBestProvider(new Criteria(), false);
         if (ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -103,11 +104,5 @@ public class CarroLocationListener extends Service implements LocationListener {
         if(listenerInstance != null) {
             locationManager.removeUpdates(listenerInstance);
         }
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

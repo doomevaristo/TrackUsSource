@@ -17,12 +17,6 @@ public class Linha implements Serializable {
     public Linha() {
     }
 
-    public Linha(String numero, String titulo, String subtitulo) {
-        this.numero = numero;
-        this.titulo = titulo;
-        this.subtitulo = subtitulo;
-    }
-
     public String getNumero() {
         return numero;
     }

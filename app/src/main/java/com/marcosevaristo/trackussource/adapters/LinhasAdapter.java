@@ -20,13 +20,11 @@ import java.util.List;
 public class LinhasAdapter extends ArrayAdapter<Linha> {
     private List<Linha> lLinhas = new ArrayList<>();
     private int layoutResId;
-    private Context ctx;
     private Integer posicaoSelecionada;
 
-    public LinhasAdapter(Context ctx, int layoutResId, List<Linha> lLinhas) {
-        super(ctx, layoutResId, lLinhas);
+    public LinhasAdapter(int layoutResId, List<Linha> lLinhas) {
+        super(App.getAppContext(), layoutResId, lLinhas);
         this.layoutResId = layoutResId;
-        this.ctx = ctx;
         this.lLinhas = lLinhas;
     }
 
@@ -50,7 +48,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
         View view = convertView;
         LinhaHolder linhaHolder = null;
         if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) App.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(layoutResId, parent, false);
             linhaHolder = new LinhaHolder();
             TextView mainTextView = (TextView)view.findViewById(R.id.linhaMainText);
@@ -70,7 +68,7 @@ public class LinhasAdapter extends ArrayAdapter<Linha> {
                 linhaHolder.subTexto.setText(linha.getSubtitulo());
             }
 
-            if((Integer.valueOf(position) == posicaoSelecionada) || (posicaoSelecionada == null && linha.ehLinhaAtual())) {
+            if(Integer.valueOf(position).equals(posicaoSelecionada) || (posicaoSelecionada == null && linha.ehLinhaAtual())) {
                 view.setBackgroundColor(App.getAppContext().getResources().getColor(R.color.selectedItem));
             } else {
                 view.setBackgroundColor(Color.TRANSPARENT);
