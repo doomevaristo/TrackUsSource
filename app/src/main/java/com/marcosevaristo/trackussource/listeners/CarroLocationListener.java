@@ -1,4 +1,4 @@
-package com.marcosevaristo.trackussource;
+package com.marcosevaristo.trackussource.listeners;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -14,8 +14,9 @@ import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
 import com.google.firebase.database.Query;
+import com.marcosevaristo.trackussource.R;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.model.Carro;
-import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
 import com.marcosevaristo.trackussource.utils.StringUtils;
 

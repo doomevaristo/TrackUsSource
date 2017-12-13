@@ -29,10 +29,10 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
-import com.marcosevaristo.trackussource.App;
-import com.marcosevaristo.trackussource.CarroLocationListener;
+import com.marcosevaristo.trackussource.listeners.CarroLocationListener;
 import com.marcosevaristo.trackussource.R;
 import com.marcosevaristo.trackussource.adapters.LinhasAdapter;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
 import com.marcosevaristo.trackussource.model.Linha;
 import com.marcosevaristo.trackussource.utils.CollectionUtils;
@@ -113,7 +113,7 @@ public class ControleDeLinha extends AppCompatActivity {
         if(CollectionUtils.isEmpty(lLinhas)) {
             FirebaseUtils.getLinhasReference(null).orderByChild("numero").addListenerForSingleValueEvent(getEventBuscaLinhasFirebase());
         } else {
-            adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
+            adapter = new LinhasAdapter(R.layout.item_da_lista_linhas, lLinhas);
             listViewLinhas.setAdapter(adapter);
             adapter.notifyDataSetChanged();
             progressBar.setVisibility(View.GONE);
@@ -145,7 +145,7 @@ public class ControleDeLinha extends AppCompatActivity {
                             }
                         }
                     }
-                    adapter = new LinhasAdapter(App.getAppContext(), R.layout.item_da_lista_linhas, lLinhas);
+                    adapter = new LinhasAdapter(R.layout.item_da_lista_linhas, lLinhas);
                     adapter.notifyDataSetChanged();
                     listViewLinhas.setAdapter(adapter);
                 } else {
