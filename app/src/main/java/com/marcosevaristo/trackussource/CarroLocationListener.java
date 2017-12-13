@@ -1,5 +1,6 @@
 package com.marcosevaristo.trackussource;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -7,12 +8,16 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.widget.Toast;
 
 import com.google.firebase.database.Query;
 import com.marcosevaristo.trackussource.model.Carro;
+import com.marcosevaristo.trackussource.utils.CollectionUtils;
 import com.marcosevaristo.trackussource.utils.FirebaseUtils;
+import com.marcosevaristo.trackussource.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -64,34 +69,29 @@ public class CarroLocationListener implements LocationListener {
 
             if (enderecos != null) {
                 Address umEndereco = enderecos.get(0);
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < umEndereco.getMaxAddressLineIndex(); i++) {
-                    sb.append(umEndereco.getAddressLine(i)).append("");
-                }
-                return sb.toString();
-                //et_lugar.setText(strReturnedAddress.toString());
-            } else {
-                //et_lugar.setText("No Address returned!");
+
+                return StringUtils.isNotBlank(umEndereco.getAddressLine(0)) ? umEndereco.getAddressLine(0) : "";
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
-            //et_lugar.setText("Canont get Address!");
         }
         return null;
     }
 
     public static void start() {
         listenerInstance = new CarroLocationListener(new Carro(App.getCarroId()));
-        locationManager = (LocationManager) App.getAppContext().getSystemService(App.getAppContext().LOCATION_SERVICE);
+        locationManager = (LocationManager) App.getAppContext().getSystemService(Context.LOCATION_SERVICE);
         locationManager.getBestProvider(new Criteria(), false);
-        if (ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(App.getAppContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         locationManager.getLastKnownLocation("gps");
         locationManager.requestLocationUpdates("gps", INTERVALO_UPDATE_LOCAL_EM_MILIS,
                 DISTANCIA_MINIMA_PARA_ATUALIZAR_LOCALIZACAO_EM_METROS, listenerInstance);
+
+        Toast.makeText(App.getAppContext(), App.getAppContext().getString(R.string.linha_iniciada, App.getLinhaAtual().getNumero()), Toast.LENGTH_LONG).show();
     }
 
     public static void stop() {

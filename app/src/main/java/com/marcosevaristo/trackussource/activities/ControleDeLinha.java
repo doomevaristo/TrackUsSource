@@ -60,14 +60,10 @@ public class ControleDeLinha extends AppCompatActivity {
         setContentView(com.marcosevaristo.trackussource.R.layout.activity_controle_de_linha);
         setupTelaInicial();
 
+        ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         if(App.getLinhaAtual() != null) {
             CarroLocationListener.start();
-            emiteMensagemLinhaIniciada();
         }
-    }
-
-    private void emiteMensagemLinhaIniciada() {
-        Toast.makeText(App.getAppContext(), App.getAppContext().getString(R.string.linha_iniciada, App.getLinhaAtual().getNumero()), Toast.LENGTH_LONG).show();
     }
 
     private void setupTelaInicial() {
@@ -185,7 +181,6 @@ public class ControleDeLinha extends AppCompatActivity {
                             CarroLocationListener.start();
                         }
                         setupStatusLinhaIcon();
-                        emiteMensagemLinhaIniciada();
                         minimizar();
                     } else {
                         Toast.makeText(App.getAppContext(), R.string.nenhuma_linha_selecionada, Toast.LENGTH_LONG).show();
