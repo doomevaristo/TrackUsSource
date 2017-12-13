@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.marcosevaristo.trackussource.App;
 import com.marcosevaristo.trackussource.R;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.model.Municipio;
 
 import java.util.ArrayList;
@@ -19,13 +19,11 @@ import java.util.List;
 public class MunicipiosAdapter extends ArrayAdapter<Municipio> {
     private List<Municipio> lMunicipios = new ArrayList<>();
     private int layoutResId;
-    private Context ctx;
     private int posicaoSelecionada = -1;
 
-    public MunicipiosAdapter(Context ctx, int layoutResId, List<Municipio> lMunicipios) {
-        super(ctx, layoutResId, lMunicipios);
+    public MunicipiosAdapter(int layoutResId, List<Municipio> lMunicipios) {
+        super(App.getAppContext(), layoutResId, lMunicipios);
         this.layoutResId = layoutResId;
-        this.ctx = ctx;
         this.lMunicipios = lMunicipios;
     }
 
@@ -49,7 +47,7 @@ public class MunicipiosAdapter extends ArrayAdapter<Municipio> {
         View view = convertView;
         MunicipioHolder municipioHolder = null;
         if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) App.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(layoutResId, parent, false);
             municipioHolder = new MunicipioHolder();
             TextView textView = (TextView)view.findViewById(R.id.municipioText);

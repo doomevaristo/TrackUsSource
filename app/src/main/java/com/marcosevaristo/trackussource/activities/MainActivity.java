@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.marcosevaristo.trackussource.App;
+import com.marcosevaristo.trackussource.app.App;
 import com.marcosevaristo.trackussource.database.QueryBuilder;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,5 +21,4 @@ public class MainActivity extends AppCompatActivity {
         }
         startActivity(intent);
     }
-
 }

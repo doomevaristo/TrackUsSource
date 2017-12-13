@@ -1,8 +1,9 @@
-package com.marcosevaristo.trackussource;
+package com.marcosevaristo.trackussource.app;
 
 import android.app.Application;
 import android.content.Context;
 import android.provider.Settings;
+import android.widget.Toast;
 
 import com.marcosevaristo.trackussource.database.SQLiteHelper;
 import com.marcosevaristo.trackussource.model.Linha;
@@ -47,5 +48,9 @@ public class App extends Application {
     }
     public static void setMunicipio(Municipio municipio) {
         App.municipio = municipio;
+    }
+
+    public static void toast(int stringID, String... params) {
+        Toast.makeText(context, context.getString(stringID, params), Toast.LENGTH_SHORT).show();
     }
 }
